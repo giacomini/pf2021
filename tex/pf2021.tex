@@ -1,0 +1,190 @@
+% Copyright 2019-2021 Istituto Nazionale di Fisica Nucleare (INFN)
+
+\documentclass[usepdftitle=false]{beamer}
+%\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{underscore}
+\usepackage{soul} %% for strikethrough
+\usepackage{upquote} % for single quotes in verbatim environments 
+\usepackage{tikz}
+\usetikzlibrary{quotes}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{shapes.symbols}
+\usetikzlibrary{shapes.arrows}
+\usetikzlibrary{matrix}
+\usetikzlibrary{intersections}
+\usetikzlibrary{fit}
+\usepackage{microtype}
+\DisableLigatures{encoding = T1, family = tt*}
+\usepackage[absolute,overlay]{textpos}
+%\usepackage[english]{babel}
+%\usepackage{times}
+%\usepackage[scaled]{beramono}
+\usepackage{textcomp} % to display correctly single quotes inside verbatim
+
+% to create bookmarks in the pdf file
+\usepackage{bookmark}
+\usepackage{etoolbox}
+\usepackage{relsize} % see Cpp command
+
+\newlength{\bytesize}
+\newlength{\memwidth}
+\newlength{\memheight}
+
+% to be used for visibility of labels
+% https://tex.stackexchange.com/questions/99119/beamer-problematic-use-of-visible-and-only-in-combination-with-tikz-to-draw-a
+\tikzset{
+  invisible/.style={opacity=0},
+  visible on/.style={alt=#1{}{invisible}},
+  alt/.code args={<#1>#2#3}{%
+    \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+  },
+}                               %
+
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+%\usepackage{fancyvrb}
+%\fvset{fontsize=\footnotesize}
+%\RecustomVerbatimEnvironment{semiverbatim}{Verbatim}{}
+
+\newenvironment<>{codeblock}{%
+  \begin{actionenv}#1%
+    \def\insertblocktitle{}%
+    \par%
+    \mode<presentation>{%\usebeamerfont{block}%
+      \setbeamercolor{local structure}{parent=example text}}%
+    \usebeamertemplate{block example begin}%
+    \begin{semiverbatim}}
+                 {\par%
+    \end{semiverbatim}%
+    \usebeamertemplate{block example end}%
+                 \end{actionenv}}
+
+\newenvironment<>{shellblock}{%
+  \begin{actionenv}#1%
+    \def\insertblocktitle{}%
+    \par%
+      \setbeamercolor{block body example}{fg=green,bg=black}%
+    \usebeamertemplate{block example begin}%
+    \begin{semiverbatim}}
+                 {\par%
+    \end{semiverbatim}%
+    \usebeamertemplate{block example end}%
+                 \end{actionenv}}
+
+\mode<presentation>
+{
+  \usetheme{default}
+
+  %\setbeamercovered{transparent}
+  \setbeamerfont{block body example}{size=\scriptsize}
+  \setbeamertemplate{blocks}[rounded][shadow=false]
+  \setbeamertemplate{itemize item}[circle]
+  \setbeamertemplate{itemize subitem}{$\circ$}
+  \setbeamertemplate{itemize subsubitem}{$-$}
+  \addtobeamertemplate{navigation symbols}{}{%
+	  \usebeamerfont{footline}%
+	  \usebeamercolor[fg]{footline}%
+		\hspace{1em}%
+		\insertframenumber
+	}
+  \usecolortheme{whale} % applies to outer elements
+  \definecolor{infnblue}{RGB}{0,45,75}
+  \definecolor{red-triadic}{RGB}{75,0,45}
+  \definecolor{green-triadic}{RGB}{38,75,0}
+  %% \setbeamercolor*{frametitle}{bg=infnblue,fg=white}
+  %% \setbeamercolor*{alerted text}{fg=red-triadic}
+  \setbeamercolor*{block body example}{use={frametitle,normal text},fg=normal text.fg,bg=frametitle.bg!5!white}
+%  \usecolortheme{rose} % applies only to blocks
+}
+
+\renewcommand{\~}{\protect\scalebox{1.2}{\textasciitilde}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bslash}{\textbackslash}
+\newcommand\upquote[1]{\textquotesingle#1\textquotesingle}
+\newcommand{\bslashn}{\upquote{\bslash{}n}}
+\newcommand{\bslashz}{\upquote{\bslash{}0}}
+\newcommand{\opt}[1]{#1\ensuremath{_{\mathit{opt}}}}
+\newcommand{\ddd}{\(\cdots\)}
+\newcommand{\qnewline}{\textquotesingle\\n\textquotesingle}
+\newcommand{\inserthitenter}{\includegraphics[height=1.1ex]{images/newline.png}}
+\newcommand{\Cpp}{C\kern-0.05em\protect\raisebox{.35ex}{\textsmaller[2]{+\kern-0.05em+}}}
+
+\tikzset{
+  memory/.style={rectangle,draw=black!50,minimum width=.9\textwidth,minimum height=.5cm},
+  word/.style={rectangle,minimum width=1.cm,minimum height=.5cm,fill=green!20!white,draw=black!50,node font=\ttfamily\scriptsize},
+  dotted word/.style={rectangle,minimum width=1.cm,minimum height=.5cm,fill=none,draw=black,densely dotted,node font=\ttfamily\scriptsize}, % the node font is necessary to keep the spacing
+  phantom word/.style={rectangle,minimum width=1.cm,minimum height=.5cm},
+  word anchor/.style={rectangle,minimum width=0.25cm,minimum height=0.5cm,draw=black,densely dotted}
+}
+
+% to set anchors within text to be able reference them from drawings outside the text
+%
+
+% semiverbatim with tikz in beamer, https://tex.stackexchange.com/a/165937
+\makeatletter
+\global\let\tikz@ensure@dollar@catcode=\relax
+
+% to add bookmark to pdf
+\apptocmd{\beamer@@frametitle}{
+  % add a bookmark that shows up in the PDF TOC at the subsection level
+  \only<1>{\bookmark[page=\the\c@page,level=2]{#1}}
+}%
+
+\makeatother
+
+\tikzstyle{every picture}+=[remember picture]
+
+\newcommand{\tikzref}[1]{% to define an anchor
+  \tikz \coordinate (#1) at (0,0.5ex);%
+}
+
+
+\title{Programmazione per la Fisica}
+\hypersetup{pdftitle=Programmazione per la Fisica -- 2021/2022}
+
+\author{F.~Giacomini\\\tiny\url{https://www.unibo.it/sitoweb/francesco.giacomini3/}}
+
+\institute{Corso di laurea in Fisica, Università di Bologna}
+
+\date{Anno Accademico 2021/2022}
+
+%\date[Short Occasion] % (optional)
+%{Date / Occasion}
+
+%\subject{Talks}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+%\pgfdeclareimage[height=0.5cm]{by-sa}{by-sa}
+%\logo{\pgfuseimage{by-sa}}
+
+\AtBeginSection[] % Do nothing for \section*
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\begin{document}
+
+\input{frontmatter.tex}
+\input{introduction.tex}
+%\input{frames.tex}
+
+\end{document}
