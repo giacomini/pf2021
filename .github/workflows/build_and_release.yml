@@ -1,0 +1,28 @@
+name: Presentation
+on: 
+  push:
+    tags:
+      - pdf_**
+  pull_request:
+    tags:
+      - pdf_**
+jobs:
+  presentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run latex
+        uses: xu-cheng/texlive-action/full@v1
+        with:
+          run: |
+            cd tex
+            pdflatex -file-line-error -interaction=nonstopmode pf2021.tex
+            pdflatex -file-line-error -interaction=nonstopmode pf2021.tex
+            mv pf2021.pdf ..
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Presentation
+          body: All slides on pdf
+          files: pf2021.pdf
