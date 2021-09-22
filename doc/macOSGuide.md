@@ -17,7 +17,7 @@ e fa parte della famiglia Unix.
 >
 > Quando indicato nel testo, potrebbe essere necessario inserire un comando da un'applicazione detta _Terminale_. In
 > questa guida i comandi sono preceduti da un simbolo detto `prompt`, che può variare in base al terminale utilizzato o
-> al sistema operativo. Tipicamente su Windows il simbolo è `>`, su Linux `$` e su MacOs `%`.
+> al sistema operativo. Tipicamente su Windows il simbolo è `>`, su Linux `$` e su MacOs `%` (oppure `$`).
 >
 > È possibile individuare il prompt all'inizio della linea di comando quando il terminale è in attesa di istruzioni.
 > Seppur riportato, non si deve inserire il simbolo di prompt nello scrivere i comandi presentati in questa guida.
@@ -28,7 +28,7 @@ e fa parte della famiglia Unix.
 
 I _Command Line Tools (CLT) di Xcode_ sono necessari per procedere con l'installazione di tutti gli strumenti di lavoro.
 
-Puoi ottenere i CLT in uno dei seguenti modi:
+Puoi ottenere i CLT in uno dei seguenti modi (le opzioni sono esclusive, basta seguire uno solo degli approcci):
 
 - apri l'applicazione Terminale (o Terminal) che si trova in Applicazioni -> Utiliy (o Applications -> Utility)
   - una volta aperta, esegui il comando `xcode-select --install` (premi invio dopo aver copiato la riga)
@@ -63,12 +63,20 @@ Se, durante l'installazione di `brew`, vedi errori relativi al comando `curl` ch
 prova ad aprire l'URL corrispondente dentro Safari, visualizza il certificato e accettalo "fidandoti sempre". Poi
 riprova il comando indicato sopra.
 
+Per verificare se l'installazione di `brew` è andata a buon fine, eseguite il comando
+
+```shell
+% brew
+```
+
+Caso il Terminale si lamenti dell'assenza del comando `brew`, per terminare l'installazione potrebbe essere necessario eseguire alcuni comani aggiuntivi. Le istruzioni esatte **sono riportate, sul Terminale, nelle ultime righe dell'output del comando installazione**.
+
 Una volta terminata l'installazione di `brew`, puoi installare gli strumenti software necessari per il corso.
 
 Innanzitutto verifica la versione più recente disponibile di `gcc`
 
 ```shell
-brew search gcc
+% brew search gcc
 ```
 
 E individua la versione maggiore disponibile. Supponendo sia la versione 11, installa i pacchetti con
