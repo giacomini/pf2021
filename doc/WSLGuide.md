@@ -88,7 +88,7 @@ Premi Ok per applicare le modifiche e al termine dell'installazione Riavvia il d
 
 Scarica il pacchetto al seguente link: [WSL2 Linux kernel update package for x64 machines](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
 
-Esegui come amministratore il pacchetto scaricato.
+Installa il pacchetto scaricato.
 
 ### 5. Impostare WSL2 come versione predefinita
 
@@ -157,36 +157,6 @@ Per installare ulteriori pacchetti, utilizza il comando `sudo apt install`. Ad e
 ``` bash
 $ sudo apt install clang-format g++
 ```
-
-## Cambiare la versione di WSL
-
-Nel caso in cui sia già stata installata una distribuzione Linux e vi sia intenzione di cambiare la versione di WSL per la specifica distribuzione, è possibile farlo da Powershell.
-
-Aprire Powershell come amministratore.
-
-Copiare ed eseguire il seguente comando:
-
-``` Powershell
-> wsl -l -v
-```
-
-per visualizzare la lista delle distribuzioni Linux installate sulla macchina e la versione di WSL in uso per ciascuna.
-
-Eseguire il seguente comando:
-
-``` Powershell
-> wsl --set-version <DISTRO> <VERSION>
-```
-
-sostituendo `<Distro>` (compresi `<` e `>`) con il nome della distribuzione da modificare, come visualizzato nella lista precedente, e `<Version>` con 1 se si vuole passare a WSL 1 o 2 se si vuole passare a WSL 2.
-
-Per esempio, se avessimo installato una distribuzione Ubuntu con WSL 1 e volessimo aggiornare a WSL 2 il comando da lanciare sarebbe:
-
-``` Powershell
-> wsl --set-version Ubuntu 2
-```
-
-> Si ricorda che per poter aggiornare a WSL 2 è necessario aver attivato la funzionalità aggiuntiva "Virtual Machine Platform" come spiegato nel punto 1 della guida.
 
 ## Installazione di Visual Studio Code
 
@@ -268,3 +238,33 @@ Per esempio il comando sopra aprirà Esplora Risorse nella cartella home dell'ut
 >
 
 A questo punto è possibile operare sui file in maniera usuale.
+
+## Cambiare la versione di WSL
+
+Nel caso in cui sia già stata installata una distribuzione Linux e vi sia intenzione di cambiare la versione di WSL per la specifica distribuzione, è possibile farlo da Powershell.
+
+Aprire Powershell come amministratore.
+
+Copiare ed eseguire il seguente comando:
+
+``` Powershell
+> wsl -l -v
+```
+
+per visualizzare la lista delle distribuzioni Linux installate sulla macchina e la versione di WSL in uso per ciascuna.
+
+Eseguire il seguente comando:
+
+``` Powershell
+> wsl --set-version <DISTRO> <VERSION>
+```
+
+sostituendo `<Distro>` (compresi `<` e `>`) con il nome della distribuzione da modificare, come visualizzato nella lista precedente, e `<Version>` con 1 se si vuole passare a WSL 1 o 2 se si vuole passare a WSL 2.
+
+Per esempio, se avessimo installato una distribuzione Ubuntu con WSL 1 e volessimo aggiornare a WSL 2 il comando da lanciare sarebbe:
+
+``` Powershell
+> wsl --set-version Ubuntu 2
+```
+
+> Si ricorda che per poter aggiornare a WSL 2 è necessario aver attivato la funzionalità aggiuntiva "Virtual Machine Platform" come spiegato nel punto 1 della guida.
