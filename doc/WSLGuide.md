@@ -11,7 +11,6 @@
   - [Installazione manuale WSL 1 - Build da 16215 a 18360](#installazione-manuale-wsl-1---build-da-16215-a-18360)
   - [Installazione semplificata WSL 2 - Build 20262 o superiore](#installazione-semplificata-wsl-2---build-20262-o-superiore)
   - [Configurare la distribuzione](#configurare-la-distribuzione)
-  - [Cambiare la versione di WSL](#cambiare-la-versione-di-wsl)
   - [Installazione di Visual Studio Code](#installazione-di-visual-studio-code)
     - [1. Installare Visual Studio Code](#1-installare-visual-studio-code)
     - [2. Installare l'estensione Remote Development](#2-installare-lestensione-remote-development)
@@ -19,6 +18,7 @@
   - [Passare file tra Windows e WSL](#passare-file-tra-windows-e-wsl)
     - [Accedere a Windows file system da WSL](#accedere-a-windows-file-system-da-wsl)
     - [Accedere al filesystem Linux da Windows](#accedere-al-filesystem-linux-da-windows)
+  - [Cambiare la versione di WSL](#cambiare-la-versione-di-wsl)
 
 Questa guida descrive i passi necessari per configurare la propria macchina Windows 10 in preparazione per il corso di Programmazione per la Fisica.
 
