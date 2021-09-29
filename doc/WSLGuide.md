@@ -11,7 +11,6 @@
   - [Installazione manuale WSL 1 - Build da 16215 a 18360](#installazione-manuale-wsl-1---build-da-16215-a-18360)
   - [Installazione semplificata WSL 2 - Build 20262 o superiore](#installazione-semplificata-wsl-2---build-20262-o-superiore)
   - [Configurare la distribuzione](#configurare-la-distribuzione)
-  - [Cambiare la versione di WSL](#cambiare-la-versione-di-wsl)
   - [Installazione di Visual Studio Code](#installazione-di-visual-studio-code)
     - [1. Installare Visual Studio Code](#1-installare-visual-studio-code)
     - [2. Installare l'estensione Remote Development](#2-installare-lestensione-remote-development)
@@ -19,6 +18,7 @@
   - [Passare file tra Windows e WSL](#passare-file-tra-windows-e-wsl)
     - [Accedere a Windows file system da WSL](#accedere-a-windows-file-system-da-wsl)
     - [Accedere al filesystem Linux da Windows](#accedere-al-filesystem-linux-da-windows)
+  - [Cambiare la versione di WSL](#cambiare-la-versione-di-wsl)
 
 Questa guida descrive i passi necessari per configurare la propria macchina Windows 10 in preparazione per il corso di Programmazione per la Fisica.
 
@@ -88,7 +88,7 @@ Premi Ok per applicare le modifiche e al termine dell'installazione Riavvia il d
 
 Scarica il pacchetto al seguente link: [WSL2 Linux kernel update package for x64 machines](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
 
-Esegui come amministratore il pacchetto scaricato.
+Installa il pacchetto scaricato.
 
 ### 5. Impostare WSL2 come versione predefinita
 
@@ -157,36 +157,6 @@ Per installare ulteriori pacchetti, utilizza il comando `sudo apt install`. Ad e
 ``` bash
 $ sudo apt install clang-format g++
 ```
-
-## Cambiare la versione di WSL
-
-Nel caso in cui sia già stata installata una distribuzione Linux e vi sia intenzione di cambiare la versione di WSL per la specifica distribuzione, è possibile farlo da Powershell.
-
-Aprire Powershell come amministratore.
-
-Copiare ed eseguire il seguente comando:
-
-``` Powershell
-> wsl -l -v
-```
-
-per visualizzare la lista delle distribuzioni Linux installate sulla macchina e la versione di WSL in uso per ciascuna.
-
-Eseguire il seguente comando:
-
-``` Powershell
-> wsl --set-version <DISTRO> <VERSION>
-```
-
-sostituendo `<Distro>` (compresi `<` e `>`) con il nome della distribuzione da modificare, come visualizzato nella lista precedente, e `<Version>` con 1 se si vuole passare a WSL 1 o 2 se si vuole passare a WSL 2.
-
-Per esempio, se avessimo installato una distribuzione Ubuntu con WSL 1 e volessimo aggiornare a WSL 2 il comando da lanciare sarebbe:
-
-``` Powershell
-> wsl --set-version Ubuntu 2
-```
-
-> Si ricorda che per poter aggiornare a WSL 2 è necessario aver attivato la funzionalità aggiuntiva "Virtual Machine Platform" come spiegato nel punto 1 della guida.
 
 ## Installazione di Visual Studio Code
 
@@ -268,3 +238,33 @@ Per esempio il comando sopra aprirà Esplora Risorse nella cartella home dell'ut
 >
 
 A questo punto è possibile operare sui file in maniera usuale.
+
+## Cambiare la versione di WSL
+
+Nel caso in cui sia già stata installata una distribuzione Linux e vi sia intenzione di cambiare la versione di WSL per la specifica distribuzione, è possibile farlo da Powershell.
+
+Aprire Powershell come amministratore.
+
+Copiare ed eseguire il seguente comando:
+
+``` Powershell
+> wsl -l -v
+```
+
+per visualizzare la lista delle distribuzioni Linux installate sulla macchina e la versione di WSL in uso per ciascuna.
+
+Eseguire il seguente comando:
+
+``` Powershell
+> wsl --set-version <DISTRO> <VERSION>
+```
+
+sostituendo `<Distro>` (compresi `<` e `>`) con il nome della distribuzione da modificare, come visualizzato nella lista precedente, e `<Version>` con 1 se si vuole passare a WSL 1 o 2 se si vuole passare a WSL 2.
+
+Per esempio, se avessimo installato una distribuzione Ubuntu con WSL 1 e volessimo aggiornare a WSL 2 il comando da lanciare sarebbe:
+
+``` Powershell
+> wsl --set-version Ubuntu 2
+```
+
+> Si ricorda che per poter aggiornare a WSL 2 è necessario aver attivato la funzionalità aggiuntiva "Virtual Machine Platform" come spiegato nel punto 1 della guida.
