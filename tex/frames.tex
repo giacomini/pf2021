@@ -272,12 +272,14 @@ int main() \{\}
 \$ g++ minimal.cpp
 \$ \uncover<3->{ls
 a.out  minimal.cpp
-\$ }\uncover<4->{./a.out
+\$ }\uncover<4->{./a.out\tikzref{program}
 \$ }\uncover<5->{g++ minimal.cpp -o minimal
 \$ ls
 a.out  minimal  minimal.cpp
 \$ }\uncover<6->{./minimal
 \$ }}\end{shellblock}
+
+  \uncover<4>{\tikz[remember picture,overlay] \draw[<-,white] ([xshift=1ex] program) -- +(1,0) node[white,right] {\scriptsize this command executes the program};}
 
   \item<7-> The \code{-o} option passed to the \code{g++} command allows to give
     another name to the final executable
@@ -820,7 +822,7 @@ a.b\end{codeblock}
     \column{0.09\textwidth}
     \centering{\scriptsize Other}
     \begin{codeblock}
-a(...)
+a(\ddd)
 a, b
 ? :\end{codeblock}
 
@@ -964,19 +966,23 @@ std::cin >{}> a >{}> b;}
 
   \begin{itemize}[<+->]
   \item A declaration statement introduces one or more new identifiers into a
-    block, possibly initializing them
+    \Cpp{} program, possibly initializing them
     \begin{itemize}
     \item typically variables, but not only
     \end{itemize}
 
-  \item A declaration of a \textbf{variable} in a block makes the variable of
-    \alert{automatic storage duration}, unless otherwise specified
+  \item A declaration of a \textbf{variable} in a \textbf{block} makes the
+    variable of \alert{automatic storage duration}, unless otherwise specified
     \begin{itemize}
     \item the corresponding object is automatically created each time the
       declaration is executed
     \item<.-> the corresponding object is automatically destroyed each time the
       execution reaches the end of the block
     \end{itemize}
+
+  \item A declaration should introduce only one identifier
+
+  \item A variable should be declared only in the moment it's actually needed
 
   \item A variable should be initialized at the point of declaration, if there
     is a meaningful initial value
@@ -1099,7 +1105,7 @@ int i = \ddd;
   \item<6-> \textit{statement} can be a block, possibly including multiple
     statements
     \begin{itemize}
-    \item In fact it's advisable to always use a block
+    \item In fact, the statement should always be a block
     \end{itemize}
   \end{itemize}
 
@@ -1118,13 +1124,13 @@ int i = \ddd;
 
     \begin{codeblock}<2->{
 \uncover<2->{bool b = true;}
-\uncover<3->{b \tikzref{aref}= a =\tikzref{eref}= b;}
-\uncover<6->{bool b2 = a !\tikzref{neref}= 1234;}
-\uncover<7->{bool b3 = b1 \alert<7>{\&\&} a < b;    // and
-bool b4 = a < b \alert<7>{||} a < c; // or
-bool b5 = \alert<7>{!}\alert<8>{(}a == b\alert<8>{)};      // not}}\end{codeblock}
+\uncover<3->{b \tikzref{aref}= i =\tikzref{eref}= j;}
+\uncover<6->{bool b2 = i !\tikzref{neref}= 1234;}
+\uncover<7->{bool b3 = b2 \alert<7>{\&\&} i < j;    // and
+bool b4 = i < j \alert<7>{||} i < k; // or
+bool b5 = \alert<7>{!}\alert<8>{(}i == j\alert<8>{)};      // not}}\end{codeblock}
 
-  \item<8-> Note the use of parenthesis in \code{!(a == b)} to have the right
+  \item<8-> Note the use of parenthesis in \code{!(i == j)} to have the right
     precedence of application of operators
   \end{itemize}
 
