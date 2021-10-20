@@ -126,7 +126,7 @@ int main()
 salviamo di nuovo il file ed eseguiamo nel terminale il seguente comando:
 
 ```bash
-clang-format -i pi_with_integral.cpp
+$ clang-format -i pi_with_integral.cpp
 ```
 
 Se tutto ha funzionato correttamente, il codice dovrebbe risultare formattato come segue:
@@ -178,20 +178,20 @@ $ g++ -Wall -Wextra pi_with_integral.cpp -o pi_with_integral
 e considerando che:
 - il risultato dell'integrale definito, calcolato tra _x_ = 0 e _x_ = 1, corrisponde all'area 
   sottesa dalla funzione ![formula](https://render.githubusercontent.com/render/math?math=\color{RoyalBlue}\large\frac{4}{1%2Bx^{2}}) 
-  nell l'intervallo _x_ = [0,1];
-- è possibile dividere l'intervallo _x_ = [0,1] in _n_ sotto-intervalli &Delta;_x_, tutti della 
+  nell l'intervallo di valori di _x_ corrispondente a [0,1];
+- è possibile dividere l'intervallo [0,1] in _n_ sotto-intervalli &Delta;_x_, tutti della 
   stessa dimensione; 
 - si può quindi approssimare il calcolo dell'integrale alla sommatoria delle aree di _n_ rettangoli, 
-  tutti di base &Delta;_x_ secondo la: 
+  tutti di base &Delta;_x_, secondo la: 
   <sub><img src="https://render.githubusercontent.com/render/math?math=\color{RoyalBlue}\large\sum_{i=0}^{n-1} \frac{4}{1%2Bx_{i}^{2}}\Delta x"></sub>, dove
   <img src="https://render.githubusercontent.com/render/math?math=\color{RoyalBlue}\x_{i} = \Delta x \cdot i">;
-- nel limite _n_ &rarr; &infin; il risultato del calcolo basato sui rettangoli coincide col risultato 
+- nel limite _n_ &rarr; &infin;, il risultato del calcolo basato sui rettangoli coincide col risultato 
   dell'integrale.
 
 Il nostro obiettivo è scrivere un programma che:
-1. legge da tastiera il numero di intervalli  _n_;
+1. legge da tastiera il numero di sotto-intervalli  _n_;
 1. avvalendosi di un ciclo (loop), effettua il il calcolo di &pi;, approssimando l'integrale alla 
-   somma delle aree di _n_ rettangoli;
+   somma delle aree degli _n_ rettangoli corrispondenti a ciascun sotto-intervallo;
 1. stampa a schermo il risultato dell'operazione.
 
 Come discusso a lezione, la descrizione del programma è stata suddivisa __di proposito__ in varie 
@@ -251,6 +251,18 @@ std::cout << 1/2 << '\n';
 std::cout << 1.0/2.0 << '\n';
 ```
 
+> __NOTA__: tipicamente, in caso si voglia assegnare il risultato di operazioni matematiche 
+> (es. prodotto) tra numeri `double` ad un'altra variabile, quello che si vuole fare è
+> definire come `double` anche la variabile che conterrà il risultato:
+
+```c++
+double base = 2.11;
+double altezza = 4.2;
+double area = base * altezza;
+std::cout << altezza << '\n';
+```
+> __HINT__: provare a definire `area` come `int` invece di `double` e controllare cosa succede.
+
 Dati `x_min`, `x_max` ed _n_, abbiamo tutti gli ingredienti per calcolare &Delta;_x_.
 Considerando inoltre che possiamo utilizzare la funzione 
 <sub><img src="https://render.githubusercontent.com/render/math?math=\color{RoyalBlue}\large\sum_{i=0}^{n-1} \frac{4}{1%2Bx_{i}^{2}}\Delta x"></sub>
@@ -300,16 +312,17 @@ Dove:
 - __g__ : è l'accelerazione di gravità.
 
 Il nostro obiettivo è scrivere un programma che:
-1. legge da tastiera le variabili |__v__| ed _&alpha;_;
+1. legge da tastiera le variabili |__v__| ed _&alpha;_ (assumendo che |__v__| sia espresso in m/s
+   ed _&alpha;_ sia espresso in gradi);
 1. le converte nelle componenti cartesiane v<sub>x</sub> e v<sub>y</sub>, poi stampa queste ultime a 
    schermo;
-1. ad intervalli di tempo definiti (es. &Delta;_t_ = 0.001 s), campiona la traiettoria del proiettile:
+1. ad intervalli di tempo definiti (es. &Delta;_t_ = 0.001 s), _campiona_ la traiettoria del proiettile:
    - registra il valore massimo (_y_<sub>max</sub>) dell'altezza dal suolo che il proiettile raggiunge 
      nei punti campionati;
    - assumendo che il cannone sia posizionato su un piano orizzontale, registra:
       - il valore del tempo di volo (_t_<sub>max</sub>);
       - la gittata (_x_<sub>max</sub>);
-      - entrambi definiti come gli ultimi valori assunti durante il campionamento prima che il proiettile 
+      - entrambi definiti come gli ultimi valori assunti durante il campionamento *prima* che il proiettile 
         tocchi il suolo;
 1. una volta terminato il campionamento, stampa a schermo _y_<sub>max</sub>, _x_<sub>max</sub> e 
    _t_<sub>max</sub>.
@@ -322,8 +335,8 @@ Anche in questo caso, l'input/output da terminale verrà gestito tramite l'uso d
 e `std::cout`.
 
 > __NOTA:__ come anticipato prima, per oggi non ci curiamo di verificare la correttezza dell'input
-> da tastiera (es. assumiamo che quanto digitato quando viene richiesto di immettere valori per  
-> per |__v__| ed _&alpha;_ sia corretto).
+> da tastiera (es. assumiamo che quanto digitato quando viene richiesto di immettere valori per 
+> |__v__| ed _&alpha;_ sia corretto).
 
 #### Elaborazione dei parametri immessi
 
@@ -338,7 +351,7 @@ Non ci preoccupiamo troppo di definire in dettaglio cosa sia una funzione per or
 verrà fatto a lezione), ma ci limitiamo a notare che:
 - funzioni come `std::cos()` funzionano in modo molto simile alle funzioni trigonometriche delle 
   moderne calcolatrici;
-- è possibile fornire loro sia numeri, che variabili come input:
+- è possibile fornire loro sia letterali (es. di tipo `double`), che variabili come _input_:
 
 ```c++
 double alpha = 0.5;
@@ -349,10 +362,10 @@ std::cout << std::cos(alpha) << '\n';
 - `cmath` include un ampia gamma di funzioni utili per il calcolo numerico.
 
 Va notato `std::cos()` e `std::sin()` assumono che il loro argomento di input (es: `0.5` o `alpha`
-nell'esempio sopra, sia espresso __in radianti__. 
+nell'esempio sopra), sia espresso __in radianti__. 
 
-Al fine di effettuare la conversione in radianti di _&alpha;_, calcoliamo, solo una volta
-all'interno del programma, &pi; nel seguente modo:
+Al fine di effettuare la conversione in radianti di _&alpha;_ (espresso in gradi), calcoliamo, solo 
+una volta all'interno del programma, &pi; nel seguente modo:
 
 ```c++
 const double pi = std::acos(-1.0);
@@ -408,7 +421,7 @@ Altezza massima : 3.46357 m
 Tempo di volo : 1.681 s
 ```
 
-> __NOTA:__ una volta immesso i valori di |__v__| ed _&alpha;_, il tempo di esecuzione 
+> __NOTA:__ una volta immessi i valori di |__v__| ed _&alpha;_, il tempo di esecuzione 
 > del programma dovrebbe essere tipicamente inferiore al secondo. Se, per via di qualche 
 > errore, il programma dovesse entrare in un loop infinito, è possibile interromperlo 
 > digitando `Ctrl + C` (Linux), oppure `command + C` (mac OS).
@@ -424,7 +437,7 @@ Possiamo infine controllate che tutto funzioni come ci aspettiamo se:
 
 ## Esempi di soluzioni
 
-Dopo l'esercitazione le soluzioni degli esercizi proposti saranno disponibili qui:
+Dopo l'esercitazione, le soluzioni degli esercizi proposti saranno disponibili qui:
 - Esercizio 1.: [`pi_with_integral.cpp`](pi_with_integral.cpp).
 - Esercizio 2.: [`projectile_motion.cpp`](projectile_motion.cpp).
 
@@ -444,7 +457,7 @@ valutate__ e __NON contribuiscono, in alcun modo al risultato finale dell'esame_
 
 La consegna deve avvenire, da parte dei singoli studenti, tramite
 [questo link](https://virtuale.unibo.it/mod/assign/view.php?id=722994) che riporta 
-ad un'apposita pagine all'interno dell'area relativa al corso su virtuale.unibo.it
+ad un'apposita pagina all'interno dell'area relativa al corso su virtuale.unibo.it
 e deve consistere nell'upload di un file archivio `.zip` o `.tgz`. 
 
 Supponendo che tutto il materiale sia nella cartella `lab1/` (come suggerito ad 
@@ -478,7 +491,7 @@ generato, e caricarlo sulla pagina di virtuale.unibo.it:
 > nella Barra degli Indirizzi di Esplora Risorse `\\wsl$\Ubuntu\` e da lì accedere alla propria 
 > home utente.
 >
-> In alternativa è sufficiente lanciare il comando explorer.exe dalla bash di WSL, specificando 
+> In alternativa è sufficiente lanciare il comando `explorer.exe` dalla bash di WSL, specificando 
 > in argomento la cartella in cui navigare.
 >
 > Si può passare l'argomento . (punto) per aprire Esplora Risorse nella cartella WSL aperta in 
@@ -487,6 +500,10 @@ generato, e caricarlo sulla pagina di virtuale.unibo.it:
 > $ explorer.exe .
 >```
 > A questo punto è possibile operare sui file in maniera usuale.
+
+> __NOTA:__ quando viene eseguito il comando `explorer.exe .` (non dimenticate il `.`) ricordarsi
+> di farlo quando ci si trova nella directory dove si è creato l'archivio. È possibile verificarlo
+> utilizzando il comando `ls`.
 
 ## Bonus
 
@@ -501,15 +518,15 @@ laboratorio, vengono proposti alcuni possibili approfondimenti __opzionali__:
      [`cmath`](https://en.cppreference.com/w/cpp/header/cmath#Functions).
 
 - alternativamente è possibile estendere il programma per il calcolo di &pi;:
-   - immettendo tramite `std::cin` il valore di precisione minima da richiedere per il calcolo 
-     dell'integrale (es. 0.0001);
-   - incrementando _n_ tramite un loop, fino a quando non si supera la precisione minima 
-     richiesta;
+   - immettendo tramite `std::cin` un valore di precisione minima che si vuole raggiungere 
+     per il calcolo dell'integrale (es. 0.0001) rispetto ad un valore di riferimento di &pi;;
+   - ripetendo il calcolo di &pi; iterativamente (tramite un secondo loop), incrementando _n_ 
+     fino a quando non si supera la precisione minima richiesta;
    - stampando a schermo, oltre al risultato del calcolo dell'integrale, anche il valore di 
      _n_ per cui si supera la soglia di precisione richiesta.
 
 > __HINTS__:
-> - come descritto nel secondo esercizio, avvalersi di `std::acos(-1.0)` per ottenere una stima 
+> - come descritto nel secondo esercizio, avvalersi di `std::acos(-1.0)` per ottenere un valore 
 > di riferimento di &pi;;
 > - `cmath` fornisce la funzione `std::abs(double x)` che permette di calcolare il valore assoluto 
 > (es: della differenza tra due numeri)
@@ -519,12 +536,12 @@ laboratorio, vengono proposti alcuni possibili approfondimenti __opzionali__:
 
 - inoltre è possibile estendere il programma per la _simulazione_ del moto parabolico:
    - per identificare l'angolo _&alpha;_<sub>max</sub> che massimizza la gittata
-   - per introdurre la possibilità di leggere da tastiera coordinate "di atterraggio" 
-     del proiettile (_y_<sub>atterraggio</sub>) minori di 0;
+   - per introdurre la possibilità di leggere da tastiera possibili coordinate "di 
+     atterraggio" del proiettile (_y_<sub>atterraggio</sub>) minori di 0;
 
 > __HINT__: per stimare _&alpha;_<sub>max</sub>, si ripeta, tramite un loop, la simulazione 
-> per una serie di valori di _&alpha;_, nel range [0,90]&deg; in step &Delta;_&alpha;_ 
-> = 0.05&deg;.
+> per una serie di valori di _&alpha;_, nel range [0,90]&deg; partendo da 0, ed incrementando
+> ad ogni iterazione del loop, _&alpha;_ in step &Delta;_&alpha;_ = 0.05&deg;.
 
 - fatto ciò:
    - si ricavi _&alpha;_<sub>max</sub> con questa versione del programma per il caso: |__v__| = 
@@ -535,12 +552,13 @@ laboratorio, vengono proposti alcuni possibili approfondimenti __opzionali__:
   se l'operazione più recente, effettuata tramite `std::cin` è andata a buon fine, per capire come 
   sarebbe possibile controllare la correttezza dei parametri passati in input ai due programmi;
 - oltre al check tramite `std::cin.good()`:
-   - per il programma che calcola &pi;, richiedere che _n_ assuma valori "ragionevoli" (cioè sia 
-     strettamente maggiore di 0).
-   - per il programma che _simula_ il moto parabolico:
+   - per il programma che calcola &pi;, si suggerisce di richiedere che _n_ assuma valori 
+     "ragionevoli" (cioè sia strettamente maggiore di 0).
+   - per il programma che _simula_ il moto parabolico, si suggerisce di controllare quanto 
+     segue:
      - |__v__| è il modulo di un vettore, è quindi necessario che il suo valore non sia 
        negativo;
-     - assumiamo che _&alpha;_ venga immesso in gradi;
+     - ricordando che abbiamo assunto che che _&alpha;_ sia immesso in gradi;
      - richiediamo che il cannone non possa sparare verso il basso;
      - richiediamo che il cannone non possa sparare "all'indietro" (al massimo gli permettiamo 
        di sparare "in verticale").
