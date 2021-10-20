@@ -285,14 +285,16 @@ Verifichiamo quindi il funzionamento del programma, per esempio:
 
 ```bash
 $ ./pi_with_integral
-Inserisci il numero di intervalli per il calcolo di pi greco: 100
+Inserisci il numero di sotto-intervalli per il calcolo di pi greco: 100
 Integrale : 3.15158
 ```
 
-> __NOTA:__ una volta immesso un valore per _n_, il tempo di esecuzione del programma
-> dovrebbe essere tipicamente inferiore al secondo. Se, per via di qualche errore, 
-> il programma dovesse entrare in un loop infinito, è possibile interromperlo digitando
-> `Ctrl + C` (Linux), oppure `command + C` (mac OS).
+> __NOTA:__ una volta immesso il valore per _n_ proposto sopra, il tempo di esecuzione 
+> del programma dovrebbe essere tipicamente inferiore al secondo. Se, per via di qualche 
+> errore, il programma dovesse entrare in un loop infinito, è possibile interromperlo 
+> digitando `Ctrl + C` (Linux), oppure `command + C` (mac OS).
+> Ovviamente il tempo di esecuzione del programma può crescere se si immettono valori
+> molto grandi per _n_.
 
 Possiamo infine controllare cosa succede se:
 - immettiamo _n_ = 0, oppure _n_ = 1;
@@ -421,10 +423,10 @@ Altezza massima : 3.46357 m
 Tempo di volo : 1.681 s
 ```
 
-> __NOTA:__ una volta immessi i valori di |__v__| ed _&alpha;_, il tempo di esecuzione 
-> del programma dovrebbe essere tipicamente inferiore al secondo. Se, per via di qualche 
-> errore, il programma dovesse entrare in un loop infinito, è possibile interromperlo 
-> digitando `Ctrl + C` (Linux), oppure `command + C` (mac OS).
+> __NOTA:__ una volta immessi i valori di |__v__| ed _&alpha;_ proposti sopra, il tempo 
+> di esecuzione del programma dovrebbe essere tipicamente inferiore al secondo. Se, per 
+> via di qualche errore, il programma dovesse entrare in un loop infinito, è possibile 
+> interromperlo digitando `Ctrl + C` (Linux), oppure `command + C` (mac OS).
 
 Possiamo infine controllate che tutto funzioni come ci aspettiamo se:
 - immettiamo valori "non ragionevoli" per |__v__| ed _&alpha;_;
@@ -532,7 +534,7 @@ laboratorio, vengono proposti alcuni possibili approfondimenti __opzionali__:
 > (es: della differenza tra due numeri)
 
 > __HINT__: una possibile soluzione di questo esercizio è: 
-> [`pi_with_integral_for.cpp`](pi_with_integral_for.cpp).
+> [`pi_with_integral_prec.cpp`](pi_with_integral_prec.cpp).
 
 - inoltre è possibile estendere il programma per la _simulazione_ del moto parabolico:
    - per identificare l'angolo _&alpha;_<sub>max</sub> che massimizza la gittata
