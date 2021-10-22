@@ -268,3 +268,57 @@ Per esempio, se avessimo installato una distribuzione Ubuntu con WSL 1 e volessi
 ```
 
 > Si ricorda che per poter aggiornare a WSL 2 è necessario aver attivato la funzionalità aggiuntiva "Virtual Machine Platform" come spiegato nel punto 1 della guida.
+
+# Risoluzione dei problemi
+
+## Fallimento nella creazione dello user su Ubuntu
+
+Se all'avvio di WSL il prompt è simile a:
+
+```bash
+root@LAPTOP:~$
+```
+
+indicando root come nome utente, vuol dire che nell'installazione si è saltato (accidentalmente) il passaggio di creazione di un utente.
+
+In tal caso è necessario ripristinare la distribuzione. In Impostazioni > App > App e funzionalità individuare Ubuntu. Cliccare su Ubuntu e selezionare Opzioni avanzate. Nella nuova schermata selezionare Ripristina... e Reimposta.
+Dopo di che riprendere l'installazione da [Configurare la distribuzione](#configurare-la-distribuzione)
+
+## sudo apt update fallisce "Temporary failure resolving 'archive.ubuntu.com'"
+
+Il problema può essere causato da una cattiva configurazione di rete.
+
+Una soluzione può essere il ripristino delle impostazioni di DNS di windows.
+
+Avviare Powershell come amministratore, ed eseguire i seguenti comandi:
+
+```powershell
+> netsh winsock reset 
+> netsh int ip reset all
+> netsh winhttp reset proxy
+> ipconfig /flushdns
+```
+
+Riavviare in seguito il dispositivo.
+
+## Impossibile avviare la macchina virtuale perché una funzionalità richiesta non è installata
+
+Il problema può essere causato dalla disattivazione a livello di BIOS della Virtualizzazione sulla prossima macchina.
+
+Si può verificare il problema verificando lo stato della `Virtualizzazione` nella scheda `Prestazioni` di `Gestione attività`.
+
+> Usando la combinazione di tasti <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Esc</kbd> è possibile aprire rapidamente Gestione Attività. Se la scheda non è visibile cliccare su `Più dettagli`.
+
+Se Virtualizzazione è indicato come disabilitato è necessario abilitarlo da BIOS. 
+
+## Impossibile avviare code su WSL, "Input/output error; VS Code Server for WSL closed unexpectedly"
+
+VSCode server è impostato erroneamente, chiudere WSL e VSCode.
+
+Lanciare Powershell come amministratore ed eseguire il seguente comando:
+
+```powershell
+> wsl.exe --shutdown
+```
+
+Dopodiché riavviare VSCode e aprire una nuova finestra su WSL cliccando sul bottone verde in basso a sinistra.
