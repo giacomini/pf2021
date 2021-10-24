@@ -1544,7 +1544,7 @@ int main()
   if (i * i > n) \{
     --i;
   \}
-  std::cout <{}< i <{}< \bslashn;
+  std::cout << i << \bslashn;
 \}\end{codeblock}
     \end{column}
 
@@ -1563,7 +1563,7 @@ int main()
   if (\alert<3>{i} * \alert<3>{i} > n) \{\uncover<3>{ // \alert{error: undeclared variable}}
     --\alert<3>{i};
   \}
-  std::cout <{}< i <{}< \bslashn;
+  std::cout << i << \bslashn;
 \}}\end{codeblock}
     \end{column}
 
@@ -1584,3 +1584,619 @@ int main()
   Hint 2: the expression \code{std::cin.good()} tells if it's still possible to
   read something from \code{std::cin}
 \end{frame}
+
+\begin{frame}[fragile]{\code{double}}
+
+  Type representing a floating-point number
+
+  \begin{itemize}
+  \item<2-> Set of values: subset of $\mathbb{R}$
+  \item<3-> Operations: addition, subtraction, multiplication, division, comparisons, \ldots
+  \item<4-> Representation: \href{https://en.wikipedia.org/wiki/IEEE_754}{IEEE 754}
+  \item<5-> 64 bits, smallest values $\approx\pm10^{-308}$, largest values $\approx\pm10^{308}$
+  \item<6-> Precision is about 16 decimal digits
+  \item<6-> Literals in the form \opt{\textit{sign}} \textit{significand} \opt{\textit{exponent}}
+    \begin{itemize}
+    \item \code{42.0 1. -1.5 12.34e3 -.34E-3 -1234e-2}
+    \item \code{\ddd{}e\textit{n}}/\code{\ddd{}E\textit{n}} means $\times 10^{n}$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\code{float}}
+
+  Type representing a floating-point number
+
+  \begin{itemize}
+  \item<2-> Set of values: subset of $\mathbb{R}$
+  \item<3-> Operations: addition, subtraction, multiplication, division, comparisons, \ldots
+  \item<4-> Representation: \href{https://en.wikipedia.org/wiki/IEEE_754}{IEEE 754}
+  \item<5-> 32 bits, smallest values $\approx\pm10^{-38}$, largest values $\approx\pm10^{38}$
+  \item<6-> Precision is about 7 decimal digits
+  \item<6-> Literals in the form \opt{\textit{sign}} \textit{significand} \opt{\textit{exponent}} \code{F}
+    \begin{itemize}
+    \item \code{42.0f 1.F -1.5f 12.34e3F -.34E-3f -1234e-2F}
+    \item Same as double but with an \code{f} or \code{F} suffix
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Handle floating-point numbers with care}
+
+  \begin{itemize}
+  \item<1-> Floating-point numbers are \textbf{not} real numbers
+    \begin{itemize}
+    \item Finite representation $\implies$ there is a previous and a next
+    \end{itemize}
+  \item<2-> When managing floating-point numbers one should take into account
+    rounding errors and inexact representations
+    \begin{codeblock}<3->{
+float x = 1\textquotesingle000\textquotesingle000\textquotesingle000;
+\uncover<4->{std::cout << std::setprecision(10)
+  << x - 32 << \upquote{ } << x << \upquote{ } << x + 32}\uncover<5->{ // 1000000000 1000000000 1000000000}
+\uncover<6->{  << x + 32 - x << \upquote{ } << x - x + 32;}\uncover<7->{    // 0 32}}\end{codeblock}
+  \item<8-> Floating-point math in general is not associative
+  \item<9-> When comparing floating-point numbers avoid the use of equality
+ \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Standard mathematical functions}
+
+  The \href{https://en.cppreference.com/w/cpp/header/cmath}{\code{cmath}} header
+  includes many ready-to-use mathematical functions
+  \begin{itemize}
+  \item Exponential
+  \item Power
+  \item Trigonometric
+  \item Interpolation
+  \item Hyperbolic
+  \item Floating-point manipulation, classification and comparison
+  \item \ldots
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+#include <cmath>
+\ddd
+double x = \ddd;
+std::sqrt(x);
+std::pow(x, .5);
+std::sin(x);
+std::log(x);
+std::abs(x);}\end{codeblock}
+\end{frame}
+
+\begin{frame}[fragile]{Type conversions}
+
+    \begin{itemize}
+    \item A value of type \code{T1} may be converted \textbf{implicitly} to a
+      value of type \code{T2} in order to match the expected type in a certain
+      situation
+      \begin{codeblock}<2->{
+1 + 2.3}\end{codeblock}
+      \begin{itemize}[<3->]
+      \item between numbers and bool
+      \item between signed and unsigned numbers
+      \item between numbers of different size
+      \item between integral and floating-point numbers
+      \item \ldots
+      \end{itemize}
+
+    \item<4-> Conversions sometimes are surprising
+    \item<5-> Conversions can be explicit using \code{static_cast}
+      \begin{codeblock}<.->{
+1 + static_cast<int>(2.3)}\end{codeblock}
+    \item<6-> Mechanims exist to define implicit and explicit conversions
+      involving user-defined types
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{const}-safety}
+
+  \begin{itemize}
+  \item Data qualified as \code{const} is logically immutable
+  \item Data that is meant to be immutable should be \code{const}
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+int \alert{const} x = 1\textquotesingle000\textquotesingle000\textquotesingle000; // or const int
+\uncover<3->{std::cout << x + 32;    // ok, read-only}
+\uncover<4->{x += 32;                // error, trying to modify}
+\uncover<5->{int const y;            // error, not initialized and not modifiable later}
+}\end{codeblock}
+
+\begin{codeblock}<6->{
+std::string \alert{const} message = "Hello";
+\uncover<7->{std::cout << message + " Francesco";      // ok, read-only}
+\uncover<8->{message += " Francesco";                  // error, trying to modify}
+\uncover<9->{std::string const empty_message;          // ok! empty string}}\end{codeblock}
+
+  \begin{itemize}[<10->]
+  \item Primitive types (e.g. \code{int}) and user-defined types such as
+    \code{std::string}) behave differently with respect to \textit{default
+      initialization}, i.e. without an explicit initial value
+    \begin{itemize}
+    \item User-defined types can define what default initialization means
+    \item For \code{std::string} it means ``empty string''
+    \item More later
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Functions}
+
+  \begin{itemize}[<+->]
+  \item A function abstracts away a piece of code that performs a well-defined
+    task behind a well-defined interface
+  \item A function associates a block of statements with
+    \begin{itemize}
+    \item a name
+    \item a list of zero or more parameters
+    \end{itemize}
+  \item A function may return a result
+  \end{itemize}
+
+  \begin{itemize}[<+->]
+  \item Let's consider the code that computes the integer square root
+    \begin{itemize}
+    \item Let's give it a name $\rightarrow$ \code{isqrt}
+    \item We pass \code{isqrt} a number $\rightarrow$ the list of parameters has
+      only one item of type \code{int}
+    \item \code{isqrt} computes a value that we want back $\rightarrow$ the
+      function returns a value of type \code{int}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{The \code{isqrt} function}
+
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}
+#include <iostream>
+
+int main()
+\{
+  int n;
+  std::cin >{}> n;
+  int i = 1;
+  while (i * i < n) \{
+    ++i;
+  \}
+  if (i * i > n) \{
+    --i;
+  \}
+  std::cout << i << \bslashn;
+\}\end{codeblock}
+
+      \vskip .5cm
+
+      \uncover<2>{Names on the two sides of the call are independent}
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}
+#include <iostream>
+
+int isqrt(int \alert<2>{n})  \only<1>{// \alert{function definition}}
+\{
+  int i = 1;
+  while (i * i < n) \{
+    ++i;
+  \}
+  if (i * i > n) \{
+    --i;
+  \}
+  return \alert<2>{i};      \only<1>{// \alert{return statement}}
+\}
+
+int main()
+\{
+  int \alt<1>{n}{\alert<2>{num}};
+  std::cin >{}> \alt<1>{n}{\alert<2>{num}};
+  int \alt<1>{i}{\alert<2>{result}} = isqrt(\alt<1>{n}{\alert<2>{num}});  \only<1>{// \alert{function call}}
+  std::cout <{}< \alt<1>{i}{\alert<2>{result}} <{}< \bslashn;
+\}\end{codeblock}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}{Functions \insertcontinuationtext}
+
+  \begin{itemize}
+  \item<1-> A function needs to be declared/defined before its use
+
+    \textit{return-type} \textit{function-name} \code{(} \textit{parameter-list} \code{);}
+
+    \textit{return-type} \textit{function-name} \code{(} \textit{parameter-list} \code{) \{ \ddd \}}
+
+    \visible<2->{
+
+      \code{int isqrt(int);}
+
+      \code{int count_words(std::string s) \{ \ddd \}}
+
+      \code{double pow(double base, double exponent);}
+
+      \code{void print(std::string);}
+
+      \code{int generate_random_number();}
+    }
+
+  \item<3-> Each parameter in the parameter list is of the form
+
+    \textit{type \opt{name}}
+
+    \textit{type} is mandatory, \textit{name} is optional
+
+  \item<4-> Parameters are separated by commas
+
+  \item<5-> The parameter list can be empty, i.e. \code{()}
+  \item<6-> If the function returns nothing, the return type is \code{void}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Functions \insertcontinuationtext}
+
+  \begin{itemize}
+
+  \item<1-> A function has only one entry point, but it may have multiple exit
+    points, i.e. there can be multiple \code{return} statements
+
+    \begin{itemize}
+    \item For a function returning a non-\code{void} type
+
+      \code{return} \textit{expression}\code{;}
+
+      The result of \textit{expression} must be convertible to the return type
+
+    \item For a function returning \code{void}
+
+      \code{return;}
+
+      In this case the \code{return} is optional (at the end of the function)
+
+    \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Functions \insertcontinuationtext}
+
+  \begin{itemize}
+  \item<1-> Calling/invoking a function is a type of expression of the form $F(E_1,
+    E_2, \ldots, E_N)$
+    \begin{itemize}
+    \item $F$ is an expression that identifies a function, typically its name
+    \item Each $E_i$ is an expression, whose value is used to initialize the
+      corresponding parameter (i.e. in the same position) in the function
+      declaration
+    \end{itemize}
+
+    \visible<2->{
+      \code{int s = isqrt(24);}
+
+      \code{std::cout << count_words("Hello, " + name);}
+
+      \code{print(std::to_string(pow(isqrt(24), 2)));}
+    }
+
+  \item<3-> A function can call other functions
+  \item<4-> A function should not be too long; if it is, try to break it into
+    multiple parts, each implemented as a function
+  \item<5-> A function can call itself, directly or indirectly
+    \begin{itemize}
+    \item This is called \textit{recursion}
+    \item Often an elegant alternative to a loop
+    \item Not easy to master, don't abuse
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{The \code{main} function}
+  \begin{itemize}
+  \item The \code{main} (special) function is the entry point of a program
+  \item It can have two forms
+    \begin{itemize}
+    \item \code{int main() \{\ddd\}}
+    \item \ldots (see later)
+    \end{itemize}
+  \item If there is no \code{return} statement, an implicit \code{return 0;} is assumed
+    \begin{itemize}
+    \item $0$ means success, different from $0$ means failure
+    \item Or use \code{EXIT_SUCCESS} and \code{EXIT_FAILURE} from \code{<cstdlib>}
+    \item The exit value is available to the shell via the \code{\$?} variable
+    \end{itemize}
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+#include <cstdlib>
+
+int main()
+\{
+  int n;
+  std::cin >{}> n;
+  if (std::cin.fail() || n < 0) \{
+    std::cerr << "Invalid number\bslash{}n";
+    return EXIT_FAILURE;
+  \}
+  \ddd
+\}}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}{Exercises}
+  \begin{itemize}
+  \item Write a function \code{pow} that takes two \code{int}s and computes and
+    returns the value of the first (the base) raised to the power of the second
+    (the exponent)
+  \item Write a function \code{gcd} that takes two \code{int}s and computes the
+    Gratest Common Denominator using the
+    \href{https://en.wikipedia.org/wiki/Euclidean_algorithm}{Euclid's algorithm}
+  \item Write a function \code{lcm} that takes two \code{int}s and computes the
+    Least Common Multiple
+  \item Write a function \code{is\_prime} that takes an \code{int} and tells if
+    it's a prime number
+  \item More on \href{https://edabit.com/}{edabit}, \href{https://leetcode.com/}{leetcode}, \ldots
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{How do we know the code we write is correct?}
+
+  \begin{itemize}[<+->]
+  \item Correctness is the result of the application of multiple good practices
+    to the software developmente process
+  \item One of the most effective techniques is \textbf{testing}
+    \begin{itemize}
+    \item Execute the code with reasonable and unreasonable input and see if it
+      behaves according to the expectations
+    \item The purpose of testing is to (try to) \alert{break} the code
+    \end{itemize}
+  \item Here we focus on a form of testing called \textit{unit testing}, where
+    the units (of code) under test are, for example, functions
+  \item There are many tools/frameworks to do unit testing (Google Test, Catch,
+    Doctest, Boost.Test, \ldots)
+  \item Let's use \href{https://github.com/onqtam/doctest}{Doctest}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{How to use Doctest}
+
+  \begin{itemize}
+  \item On \href{https://godbolt.org/}{godbolt} it's available selecting it
+    under ``Libraries''
+  \item Otherwise download locally a single
+    \href{https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h}{\textit{header
+        file}} into the directory containing your code, e.g. using \code{wget}
+    or \code{curl}
+  \item At the top of your C++ file add the lines
+    \begin{codeblock}
+#define DOCTEST\_CONFIG\_IMPLEMENT\_WITH\_MAIN
+#include "doctest.h"\end{codeblock}
+  \item Don't add \code{main} into your file
+  \item After the code of the function(s) you have written, add lines like the
+    following:
+    \begin{codeblock}
+TEST_CASE("Testing isqrt") \{
+  CHECK(isqrt(0) == 0);
+  CHECK(isqrt(9) == 3);
+  CHECK(isqrt(10) == 3);
+  CHECK(isqrt(-1) == 0);
+  \ddd
+\}\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Memory layout of a process}
+
+  \begin{itemize}
+  \item A process is a running program
+  \item When a program is started the operating system brings the contents of
+    the corresponding file into memory according to well-defined conventions
+  \end{itemize}
+
+  \begin{columns}
+    \begin{column}{.7\textwidth}
+      \begin{itemize}
+        \item[]
+      \begin{itemize}
+      \item Stack
+        \begin{itemize}
+        \item function local variables
+        \item function call bookkeeping
+        \end{itemize}
+      \item Heap
+        \begin{itemize}
+        \item dynamic allocation
+        \end{itemize}
+      \item Global data
+        \begin{itemize}
+        \item literals and variables
+        \item initialized and uninitialized (set to 0)
+        \end{itemize}
+      \item Program instructions
+      \end{itemize}
+    \end{itemize}
+  \end{column}
+
+    \begin{column}{.3\textwidth}
+      \centering\includegraphics[height=.5\textheight]{images/process-memory-layout}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Functions and the stack}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}
+\alert<4>{int isqrt(int n)
+\{
+  int i} \alert<6>{= 1};
+  \alert<7>{while (i * i < n) \{
+    ++i;
+  \}
+  if (i * i > n) \{
+    --i;
+  \}}
+  \alert<8>{return i;}
+\alert<4>{\}}
+
+\alert<2>{int main()
+\{
+  int num};
+  \alert<3>{std::cin >{}> num;}
+  \alert<2>{int result} \alert<8>{=} \alert<4>{isqrt(}\alert<5>{num}\alert<4>{)};
+  std::cout <{}< result <{}< \bslashn;
+\alert<2>{\}}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.4\textwidth}
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        anchor=south west]
+        \visible<1->{
+          \node at (0,0) [
+          mem,
+          minimum height=7cm,
+          label={90:Stack}] {};
+        }
+        \visible<2-9>{
+          \node (main) at (0,4) [
+            frame,
+            minimum height=2cm,
+            label={[yshift=.9cm]0:\scriptsize\tt main}
+          ] {};
+          \node (result) [
+            var,
+            above=3ex of main.south,
+            label={180:\scriptsize\tt result}
+          ] {\only<8->{2}};
+          \node (num) [
+            var,
+            above=0pt of result,
+            label={180:\scriptsize\tt num}
+          ] {\only<3->{5}};
+        }
+        \visible<4-8>{
+          \node (isqrt) [
+            frame,
+            below=0pt of main,
+            minimum height=2cm,
+            label={[yshift=.9cm]0:\scriptsize\tt isqrt}
+          ] {};
+          \node (i) [
+            var,
+            above=3ex of isqrt.south,
+            label={180:\scriptsize\tt i}
+          ] {\only<6>{1}\only<7->{2}};
+          \node (n) [
+            var,
+            above=0pt of i,
+            label={180:\scriptsize\tt n}
+          ] {\only<5->{5}};
+        }
+        \visible<2-3,9>{
+          \node (main rsp) at ([xshift=-2cm]main.south west) {\scriptsize\tt \%rsp};
+          \draw[->] (main rsp) -- +(1.5cm,0);
+        }
+        \visible<4-8>{
+          \node (isqrt rsp) at ([xshift=-2cm]isqrt.south west) {\scriptsize\tt \%rsp};
+          \draw[->] (isqrt rsp) -- +(1.5cm,0);
+        }
+      \end{tikzpicture}
+    \end{column}
+
+  \end{columns}
+
+  \uncover<10>{}
+
+\end{frame}
+
+\begin{frame}{Pass by-value, return by-value}
+
+  Given a function
+
+  % \tikzref doesn't work inside \code nor inside \texttt; to be investigated
+
+  \begin{equation*}
+    \code{R F(T$_1$ p}\tikzref{p1}\code{$_1$, \ddd, T$_n$ p}\tikzref{pn}\code{$_n$) \{ \ddd{} return E}\tikzref{er}\code{$_R$; \} }
+  \end{equation*}
+
+  and a function call
+
+  \begin{equation*}
+    \code{R r}\tikzref{r}\code{ = F(E}\tikzref{e1}\code{$_1$, \ddd, E}\tikzref{en}\code{$_n$);}
+  \end{equation*}
+
+  \begin{itemize}
+  \item<2-> Each \code{p$_i$} is initialized as a \alert{copy} of the value of
+    expression \code{E$_i$}
+    \begin{itemize}
+    \item If \code{E$_i$} is just a variable, changing \code{p$_i$} inside the
+      function doesn't change the variable
+    \end{itemize}
+  \item<3-> \code{r} is initialized as a \alert{copy} of the value of expression
+    \code{E$_R$}
+  \end{itemize}
+
+  \visible<2->{
+    \tikz[remember picture, overlay] \draw[-Stealth,blue,line width=1pt] ([yshift=1ex] e1) -- ([yshift=-1ex]p1);
+    \tikz[remember picture, overlay] \draw[-Stealth,blue,line width=1pt] ([yshift=1ex] en) -- ([yshift=-1ex]pn);
+  }
+  \visible<3->{
+    \tikz[remember picture, overlay] \draw[-Stealth,brown,line width=1pt] ([yshift=-1ex] er) -- ([yshift=1ex]r);
+  }
+
+\end{frame}
+
+\begin{frame}{Stack frame}
+
+  \begin{itemize}[<+->]
+  \item A piece of memory allocated and dedicated to the execution of a function
+  \item It contains local variables (including function parameters), return
+    address, saved registers, \ldots
+  \item Managed in a Last-In, First-Out (LIFO) way
+  \item The size of the stack frame is computed by the compiler
+  \item There is a special register (the stack pointer register, \code{\%rsp})
+    that indicates the frame of the currently running function
+  \item At runtime the allocation/deallocation of a frame consists simply in
+    subtracting/adding that frame size to the stack pointer register
+  \end{itemize}
+\end{frame}
+
