@@ -12,6 +12,8 @@ e fa parte della famiglia Unix.
   - [Installazione di Visual Studio Code](#installazione-di-visual-studio-code)
   - [Installazione di componenti aggiuntivi](#installazione-di-componenti-aggiuntivi)
   - [Aggiornamenti dei software installati](#aggiornamenti-dei-software-installati)
+- [Risoluzione dei problemi](#risoluzione-dei-problemi)
+  - [Non è possibile lanciare VSCode da terminale](#non-è-possibile-lanciare-vscode-da-terminale)
 
 > **Nota alla riga di comando**
 >
@@ -55,7 +57,7 @@ Per l'uso di _brew_ sono richiesti alcuni prerequisiti:
 
 Una volta installati i CLT, installa `brew` eseguendo, sempre sul Terminale, il seguente comando
 
-```shell
+```zsh
 % /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
@@ -65,23 +67,26 @@ riprova il comando indicato sopra.
 
 Per verificare se l'installazione di `brew` è andata a buon fine, eseguite il comando
 
-```shell
+```zsh
 % brew
 ```
 
-Caso il Terminale si lamenti dell'assenza del comando `brew`, per terminare l'installazione potrebbe essere necessario eseguire alcuni comani aggiuntivi. Le istruzioni esatte **sono riportate, sul Terminale, nelle ultime righe dell'output del comando installazione**.
+Caso il Terminale si lamenti dell'assenza del comando `brew` (es. `zsh: command 
+not found: brew`), per terminare l'installazione potrebbe essere necessario 
+eseguire alcuni comandi aggiuntivi. Le istruzioni esatte **sono riportate, sul 
+Terminale, nelle ultime righe dell'output del comando installazione**.
 
 Una volta terminata l'installazione di `brew`, puoi installare gli strumenti software necessari per il corso.
 
 Innanzitutto verifica la versione più recente disponibile di `gcc`
 
-```shell
+```zsh
 % brew search gcc
 ```
 
 E individua la versione maggiore disponibile. Supponendo sia la versione 11, installa i pacchetti con
 
-```shell
+```zsh
 % brew install git gcc@11 clang-format
 ```
 
@@ -97,9 +102,34 @@ di solito indicato nel materiale di questo corso. Nota che il comando `g++` è p
 per un altro compilatore e potrebbe essere necessario specificare esplicitamente delle opzioni di compilazione
 aggiuntive, in particolare `-std=c++14`; il comando quindi diventerebbe `g++ -std=c++14`.
 
+Per verificare la corretta installazione dei pacchetti menzionati, eseguire i seguenti comandi
+
+```zsh
+% git --version
+git version 2.33.0
+```
+
+```zsh
+g++-11 --version
+g++-11 (Homebrew GCC 11.2.0) 11.2.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+```zsh
+% clang-format --version
+clang-format version 12.0.1
+```
+
+I numeri di versione riportati sopra sono solo indicativi, e possono variare nel
+tempo, quello che è importante è che nessuno dei tentativi di esecuzione termini
+con un errore del tipo `zsh: command not found:`.
+
 ## Installazione di Visual Studio Code
 
-Per l'installazione di _Visual Studio Code_ scarica il pacchetto dalla [pagina](https://code.visualstudio.com/) corrispondente.
+Per l'installazione di _Visual Studio Code_ (VSCode) scarica il pacchetto dalla 
+[pagina](https://code.visualstudio.com/) corrispondente.
 
 Alcune note in merito all'installazione:
 
@@ -107,6 +137,13 @@ Alcune note in merito all'installazione:
   descritto [qui](https://code.visualstudio.com/docs/setup/mac#_installation)
 - abilita l'esecuzione dell'applicazione da Terminale seguendo le istruzioni riportate
     [qui](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line) 
+
+Per verificare la corretta installazione di VSCode, provare ad aprirlo eseguendo
+il seguente comando
+
+```zsh
+% code
+```
 
 ## Installazione di componenti aggiuntivi
 
@@ -118,7 +155,7 @@ Nella seconda parte del corso, si farà uso di strumenti aggiuntivi, quali:
 
 Nel caso di macOS, è possibile installare anche queste componenti aggiuntive tramite `brew`:
 
-```shell
+```zsh
 % brew install cmake sfml
 ```
 
@@ -127,10 +164,10 @@ Nel caso di macOS, è possibile installare anche queste componenti aggiuntive tr
 È buona norma aggiornare periodicamente, indicativamente una volta alla settimana, tutti i pacchetti software
 installati.
 
-Nel caso delle componenti installate tramite `brew`, l'aggiornamento si effettua [eseguendo i sguenti
+Nel caso delle componenti installate tramite `brew`, l'aggiornamento si effettua [eseguendo i seguenti
 comandi](https://docs.brew.sh/FAQ#how-do-i-update-my-local-packages)
 
-```shell
+```zsh
 % brew update
 % brew upgrade
 ```
@@ -139,6 +176,34 @@ Il primo comando aggiorna il programma `brew` e la lista dei pacchetti (detti _f
 effettua l'aggiornamento dei pacchetti installati. Prima di eseguire il comando `brew upgrade`, puoi controllare la
 lista dei pacchetti che verranno aggiornati col comando
 
-```shell
+```zsh
 % brew outdated
+```
+
+# Risoluzione dei problemi
+
+## Non è possibile lanciare VSCode da terminale
+
+Qualora, lanciando il comando `code` da terminale, si incorra in un errore simile a:
+
+```zsh
+% code
+zsh: command not found: code
+```
+
+procedere come segue:
+
+1. si apra la _Command Palette_ di VSCode utilizzando i tasti di scelta rapida 
+   `Cmd + Shift + P` e si esegua il comando che si trova digitando  'uninstall 
+   code from path';
+1. si provi di nuovo ad abilitare l'esecuzione dell'applicazione da Terminale 
+   seguendo le istruzioni riportate [qui](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
+
+> __NOTA__: qualora venga richiesto di digitare la propria password, o di confermare 
+> il comando utilizzando il lettore di impronte digitali, lo si faccia.
+
+A questo punto, si provi di nuovo ad eseguire il comando `code` da terminale:
+
+```zsh
+% code
 ```
