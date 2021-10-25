@@ -19,6 +19,11 @@
     - [Accedere a Windows file system da WSL](#accedere-a-windows-file-system-da-wsl)
     - [Accedere al filesystem Linux da Windows](#accedere-al-filesystem-linux-da-windows)
   - [Cambiare la versione di WSL](#cambiare-la-versione-di-wsl)
+- [Risoluzione dei problemi](#risoluzione-dei-problemi)
+  - [Fallimento nella creazione dello user su Ubuntu](#fallimento-nella-creazione-dello-user-su-ubuntu)
+  - [sudo apt update fallisce "Temporary failure resolving 'archive.ubuntu.com'"](#sudo-apt-update-fallisce-temporary-failure-resolving-archiveubuntucom)
+  - [Impossibile avviare la macchina virtuale perché una funzionalità richiesta non è installata](#impossibile-avviare-la-macchina-virtuale-perché-una-funzionalità-richiesta-non-è-installata)
+  - [Impossibile avviare code su WSL, "Input/output error; VS Code Server for WSL closed unexpectedly"](#impossibile-avviare-code-su-wsl-inputoutput-error-vs-code-server-for-wsl-closed-unexpectedly)
 
 Questa guida descrive i passi necessari per configurare la propria macchina Windows 10 in preparazione per il corso di Programmazione per la Fisica.
 
