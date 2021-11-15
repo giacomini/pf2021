@@ -1,4 +1,4 @@
-% !TeX root = ./pf2020.tex
+% !TeX root = ./pf2021.tex
 
 %\includeonlyframes{current}
 
@@ -1840,7 +1840,11 @@ int main()
   \item<4-> Parameters are separated by commas
 
   \item<5-> The parameter list can be empty, i.e. \code{()}
-  \item<6-> If the function returns nothing, the return type is \code{void}
+
+  \item<6-> The \code{return} statement returns the result (and the control) to
+    the calling function
+
+  \item<7-> If the function returns nothing, the return type is \code{void}
   \end{itemize}
 
 \end{frame}
@@ -2202,3 +2206,494 @@ TEST_CASE("Testing isqrt") \{
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Passing by value may be expensive}
+
+  Let's consider a function that counts the number of words in a string
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+
+      \begin{codeblock}
+int count_words(std::string \alert<5>{s})
+\{
+  int count = 0;
+  \ddd
+  return count;
+\}
+
+\alert<2>{int main()
+\{
+  std::string text} \alert<3>{= \ddd};
+  \alert<2>{int const res} = \alert<4>{count_words(}\alert<5>{text}\alert<4>{)};
+  std::cout <{}< res <{}< \bslashn;
+\alert<2>{\}}\end{codeblock}
+
+      \begin{itemize}
+      \item<5-> \code{s} is a \textbf{copy} of \code{text}
+      \item<6-> I'm slightly cheating: not all string memory goes on the stack
+      \end{itemize}
+
+    \end{column}
+
+    \begin{column}{.4\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        anchor=south west
+        ]
+        \node at (0,0) [
+          mem,
+          minimum height=6cm
+        ] {};
+        \visible<2->{
+          \node (main) at (0,3) [
+            frame,
+            minimum height=2.5cm,
+            label={[yshift=1.1cm]0:\scriptsize\tt main}
+          ] {};
+          \node (result) [
+            var,
+            above=3ex of main.south,
+            label={180:\scriptsize\tt res}
+          ] {};
+          \node (text) [
+            var,
+            minimum height=1cm,
+            text width=2cm,
+            align=center,
+            above=0pt of result,
+            label={180:\scriptsize\tt text}
+          ] {\only<3->{\tiny\textit{Nel mezzo del cammin di nostra vita\ldots}}};
+        }
+        \visible<4->{
+          \node (countwords) [
+            frame,
+            below=0pt of main,
+            minimum height=2.5cm,
+            label={[yshift=1.1cm]0:\scriptsize\tt count_words}
+          ] {};
+          \node (count) [
+            var,
+            above=3ex of countwords.south,
+            label={180:\scriptsize\tt count}
+          ] {};
+          \node (s) [
+            var,
+            minimum height=1cm,
+            text width=2cm,
+            align=center,
+            above=0pt of count,
+            label={180:\scriptsize\tt s}
+          ] {\only<5->{\tiny\textit{Nel mezzo del cammin di nostra vita\ldots}}};
+        }
+      \end{tikzpicture}
+    \end{column}
+
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{References}
+
+  \begin{itemize}
+  \item A variable declared as a \alert{reference} of a type \code{T} is another
+    name (an \textit{alias}) for an existing object of type \code{T}
+  \end{itemize}
+
+  \begin{tikzpicture}[
+      mem/.style={
+        node font=\ttfamily\scriptsize,
+        minimum height=.5cm,
+      },
+      location/.style={
+        mem,
+        draw=black!50,
+        minimum width=2cm,
+        fill=green!20!white,
+      },
+      every node/.style={
+        mem,
+      },
+      anchor=south west,
+      node distance=0,
+    ]
+
+    \visible<2->{
+      \node (memory) at (0,0) [mem, draw=black!50, minimum width=\textwidth] {};
+
+      \node (i) at (2,0) [
+        location,
+        "i" below,
+        "\alert<3>{ri}" {visible on=<3->,yshift=-0.3cm,below}
+      ] {\only<-4>{12}\only<5-6>{34}\only<7->{56}};
+
+      \node (j) at (7,0) [
+        location,
+        "j" below
+      ] {56};
+    }
+
+  \end{tikzpicture}
+
+  \begin{codeblock}<2->{
+int i = 12;
+int j = 56;
+\uncover<3->{int\alert<3>{\&} ri = i;         // reference declarator}
+\uncover<4->{ri == 12;            // true}
+\uncover<5->{ri = 34;}
+\uncover<6->{ri == 34 \&\& i == 34; // true}
+\uncover<7->{ri = j;}
+\uncover<8->{ri == 56 \&\& i == 56; // true}
+\uncover<9->{int\& r;              // error}}\end{codeblock}
+
+  \begin{itemize}
+  \item<10-> A reference must be initialized to refer to a valid object
+  \item<10-> A reference cannot \textit{rebind} (be re-associated) to another
+    object
+  \item<11-> For a given type \code{T}, \code{T\&} is a \textit{compound} type,
+    distinct from \code{T}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Passing by reference}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+
+      \begin{codeblock}
+int count_words(std::string\alert<1->{\&} s)
+\{
+  \alert<5>{int count = 0;}
+  \alert<6>{\ddd}
+  \alert<7>{return count;}
+\}
+
+\alert<2>{int main()
+\{
+  std::string text} \alert<3>{= \ddd};
+  \alert<2>{int const res} \alert<7>{=} \alert<4>{count_words(text)};
+  std::cout <{}< res <{}< \bslashn;
+\alert<2>{\}}\end{codeblock}
+
+      \uncover<8>{}
+      \uncover<9>{}
+
+      \vskip .5 cm
+
+      \visible<4->{\scriptsize (*) In general it's unspecified if a reference
+        occupies storage. Here probably it does (called s$'$)}
+
+    \end{column}
+
+    \begin{column}{.4\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        anchor=south west
+        ]
+        \node at (0,0) [
+          mem,
+          minimum height=6cm
+        ] {};
+        \visible<2-8>{
+          \node (main) at (0,3) [
+            frame,
+            minimum height=2.5cm,
+            label={[yshift=1.1cm]0:\scriptsize\tt main}
+          ] {};
+          \node (result) [
+            var,
+            above=3ex of main.south,
+            label={180:\scriptsize\tt res}
+          ] {\only<7-8>{12345}};
+          \node (text) [
+            var,
+            minimum height=1cm,
+            text width=2cm,
+            align=center,
+            above=0pt of result,
+            "\scriptsize\tt text" left,
+            "\scriptsize\tt\alert<4-7>{s}" {visible on=<4-7>,xshift=-.8cm,left}
+          ] {\only<3->{\tiny\textit{Nel mezzo del cammin di nostra vita\ldots}}};
+        }
+        \visible<4-7>{
+          \node (countwords) [
+            frame,
+            below=0pt of main,
+            minimum height=1.7cm,
+            label={[yshift=.5cm]0:\scriptsize\tt count_words}
+          ] {};
+          \node (count) [
+            var,
+            above=3ex of countwords.south,
+            label={180:\scriptsize\tt count}
+          ] {\only<5>{0}\only<6-7>{12345}};
+          \node (sref) [
+            var,
+            above=0pt of count,
+            label={180:\scriptsize\tt s$'$}
+          ] {(*)};
+        }
+      \end{tikzpicture}
+    \end{column}
+
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{\code{const} and references}
+
+  \begin{codeblock}
+std::string name = "Francesco";
+\uncover<2->{std::string\alert{\&} rname = name;        // ok, can read/modify name via rname}
+\uncover<3->{std::string \alert{const\&} crname = name; // ok, crname is a read-only view of name}\end{codeblock}
+
+  \begin{codeblock}<4->{
+std::string \alert{const} name = "Francesco";
+\uncover<5->{std::string\alert{\&} rname = name;        // error, could modify name via rname}
+\uncover<6->{std::string \alert{const\&} crname = name; // ok, can only read name via rcname}}\end{codeblock}
+
+  \begin{codeblock}<7->{
+int count\_words(std::string \alert{const\&} s)
+\{
+   \ddd
+\}}\end{codeblock}
+\end{frame}
+
+\begin{frame}[fragile]{How to pass arguments to functions}
+  \begin{itemize}
+  \item For input parameters
+    \begin{itemize}
+    \item If the type is primitive, pass by value
+      \begin{codeblock}
+int isqrt(int n);        // good
+int isqrt(int const& n); // bad!\end{codeblock}
+    \item Otherwise pass by const reference
+      \begin{codeblock}
+int count\_words(std::string const\&);\end{codeblock}
+    \end{itemize}
+  \item For input-output or output parameters, pass by non-const reference
+    \begin{codeblock}
+void to_lowercase(std::string\& s);
+void read_from_cin(int& n);\end{codeblock}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Function overloading}
+
+  \begin{itemize}
+  \item Multiple functions can have the same name
+  \item But different lists of parameters (number and/or types)
+  \item The compiler chooses the function that best matches the arguments in
+    the call
+    \begin{itemize}
+    \item It usually does what is expected, possibly applying appropriate
+      implicit conversions, but not always
+    \item Compilation error if there is no match or no unique best match
+    \end{itemize}
+  \item The return type doesn't matter
+  \end{itemize}
+
+  \begin{codeblock}
+void foo(int);
+int  foo(int, char);
+bool foo(double);
+int  foo(std::string s);
+
+foo(0);             // call foo(int)
+foo(0, \upquote{0});        // call foo(int, char);
+foo(0.);            // call foo(double)
+foo(std::string\{\}); // call foo(std::string)
+foo(0L);            // long int, ambiguous, error
+foo(\upquote{a});           // call foo(int)
+foo("a");           // call foo(std::string)\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Conditional/ternary operator expression}
+
+  \begin{center}
+    \textit{expression}$_{condition}$ \code{?} \textit{expression}$_{true}$ \code{:} \textit{expression}$_{false}$
+  \end{center}
+
+  \begin{codeblock}
+int gcd(int a, int b)
+\{
+  return (b == 0) \alert{?} a \alert{:} gcd(b, a \% b);
+\}\end{codeblock}
+
+  \begin{itemize}
+  \item Evaluate \textit{expression}$_{condition}$, whose value is of type
+    (convertible to) \code{bool}
+  \item If \code{true}, \textit{expression}$_{true}$ is evaluated and the
+    resulting value is the value of the whole expression
+  \item If \code{false}, \textit{expression}$_{false}$ is evaluated and the
+    resulting value is the value of the whole expression
+  \end{itemize}
+
+  \begin{itemize}
+  \item Similar to an \code{if} statement, but usable (and useful) where only an
+    expression is allowed
+  \item The types of \textit{expression}$_{true}$ and
+    \textit{expression}$_{false}$ are subject to some constraints, but let's
+    assume that they have to be the same
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{\code{break} and \code{continue} for loops}
+
+  \begin{itemize}
+  \item<1-> Within a loop block, the \code{break} statement allows to terminate
+    the loop
+  \item<2-> Within a loop block, the \code{continue} statement allows to jump to
+    the end of the current iteration of the loop
+  \item<3> The same effect can be obtained with appropriate use of conditionals,
+    but the resulting code may be more complicated
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Object initialization with braces}
+
+  \begin{itemize}
+  \item An object can be initialized specifying its value between \code{\{\}}
+
+    \begin{codeblock}
+int i\{123\};
+float f\{123.F\};
+std::string s\{"hello"\};\end{codeblock}
+
+  \item Introduced as a \textit{universal} form of initialization that could
+    replace all others, but there are situations where it's not usable
+
+  \item Protects against \textit{narrowing}, i.e. loss of information caused by
+    implicit conversions
+
+    \begin{codeblock}
+double d\{1.\};         // ok, no conversion
+float f1\{1.\};         // ok, no information loss
+float f2\{d\};          // error
+float f3\{9\textquotesingle{}999\textquotesingle{}999\};  // ok, no information loss
+float f3\{99\textquotesingle{}999\textquotesingle{}999\}; // error
+int i\{1.\};            // error
+int g\{d\};             // error\end{codeblock}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\code{char}}
+
+  Type representing a character
+
+  \begin{itemize}[<+->]
+  \item Set of values: letters in the alphabet (lower- and upper-case), digits,
+    punctuation marks, some special characters, \ldots
+  \item Size: typically 1 byte, but not necessarily
+  \item Representation: let's assume the
+    \href{https://en.wikipedia.org/wiki/ASCII}{ASCII} encoding
+  \item Literals: characters between single quotes
+    \begin{itemize}[<.->]
+    \item \code{\upquote{a} \upquote{B} \upquote{7} \upquote{,} \upquote{?} \upquote{\#} \upquote{/}}
+    \end{itemize}
+  \item Some character literals need to be expressed as \code{\bslash}-escaped
+    sequences
+    \begin{itemize}[<.->]
+    \item \code{\upquote{\bslash\textquotesingle} \upquote{\bslash\bslash} \upquote{\bslash{n}} \upquote{\bslash{t}} \upquote{\bslash{0}}}
+    \end{itemize}
+  \item A \code{char} is an integral type so it supports integral operations
+    \begin{itemize}
+    \item \code{std::cout <{}< \upquote{9} - \upquote{0}; // 9}
+    \item \code{c < \upquote{z};}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\textit{range-for} loop}
+
+    \code{for (} \textit{range-declaration} \code{:} \textit{range-expression} \code{)} \textit{statement}
+
+  \begin{itemize}
+  \item Simplified form of a \code{for} loop, to iterate on all the elements of
+    a \textit{range} (sequence), such as a string of characters
+  \item<2-> Execute repeatedly \textit{statement} for all the elements of the range
+  \item<3-> \textit{range-declaration} declares a variable of the same type of
+    an element of the range
+    \begin{itemize}
+    \item Can (and should) be a (const) reference
+    \end{itemize}
+  \item<4-> \textit{range-expression} represents the range to iterate over
+  \item<5-> More on ranges later
+  \end{itemize}
+
+  \begin{codeblock}
+std::string s\{"Hello!"\};
+for (char& c : s) \{
+  c = std::toupper(c); 
+\}
+
+for (int i : \{1, 2, 3, 4, 5\}) \{
+  std::cout << i << \upquote{ };
+\}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}{Exercises}
+
+  \begin{itemize}
+  \item Write a function that takes a \code{char} and returns the corresponding
+    lowercase character if it is a letter; the same char otherwise
+    \begin{itemize}
+    \item e.g. \upquote{A} $\rightarrow$ \upquote{a}, \upquote{a} $\rightarrow$
+      \upquote{a}, \upquote{;} $\rightarrow$ \upquote{;}
+    \end{itemize}
+  \item Write a function that takes two numeric operands of type \code{double}
+    and one operator of type \code{char} and returns the result of applying that
+    operator to the two operands. For example if the two operands have values
+    $2.0$ and $3.0$ respectively and the operator has value \code{\upquote{+}},
+    then the function returns a result with value $5.0$. If the operator is
+    invalid, the function returns $0$.
+  \end{itemize}
+\end{frame}
