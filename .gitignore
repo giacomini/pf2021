@@ -1,0 +1,9 @@
+a.out
+*.o
+
+*~
+.vscode
+
+# cmake build directories
+build
+
