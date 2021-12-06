@@ -135,7 +135,7 @@ int increment(int n)
   {\tiny (from \url{https://www.riken.jp/en/})}
 \end{frame}
 
-\begin{frame}[label=current]{The Von Neumann architecture}
+\begin{frame}{The Von Neumann architecture}
 
   \begin{center}
 
@@ -3189,6 +3189,27 @@ norm2(c);  // call the free function\end{codeblock}
 
 \end{frame}
 
+\begin{frame}[fragile]{\code{std::string} \insertcontinuationtext}
+
+  \begin{itemize}
+
+  \item A user-defined type to represent a sequence of characters
+  \item Provided by the C++ Standard Library
+  \item Provides (too) many member functions
+    \begin{itemize}
+    \item Construction
+    \item Capacity (e.g. \code{size()}, \code{empty()})
+    \item Assignment (e.g. \code{=}, \code{assign()})
+    \item Comparison (\code{==}, \code{!=}, \code{<}, \code{>}, \code{<=}, \code{>=})
+    \item Access to a character (e.g. \code{[]}, \code{back()}, \code{front()})
+    \item Insertion/removal (e.g. \code{insert()}, \code{append()}, \code{erase()})
+    \item Search (e.g. \code{find()})
+    \item \ldots
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
 \begin{frame}[fragile]{Construction \insertcontinuationtext}
 
   \begin{codeblock}<1->{
@@ -3228,7 +3249,7 @@ Complex c3; // or \{\}, meaning \{0., 0.\}; () cannot be used here}\end{codebloc
 
 \end{frame}
 
-\begin{frame}[fragile]{User-defined conversions with constructors}
+\begin{frame}[fragile]{\code{explicit} constructor}
 
   \begin{codeblock}
 class Complex \{
@@ -3244,7 +3265,7 @@ norm2(1.);\uncover<2->{ // callable with a double (-> Complex)}
 \uncover<5->{3 + c;     // call operator+ with two Complex, only if free function}\end{codeblock}
 
   \begin{itemize}
-  \item<2-> The one-argument constructor is used for the conversion
+  \item<2-> The (one-parameter) constructor is used for the conversion
   \item<6-> An \code{explicit} constructor prevents the implicit conversion
   \end{itemize}
 
@@ -3259,25 +3280,84 @@ norm2(Complex\{1.\}); // ok}\end{codeblock}
 
 \end{frame}
 
-\begin{frame}[fragile]{\code{std::string} \insertcontinuationtext}
+\begin{frame}[fragile]{\code{explicit} constructor \insertcontinuationtext}
 
   \begin{itemize}
-
-  \item A user-defined type to represent a sequence of characters
-  \item Provided by the C++ Standard Library
-  \item Provides (too) many member functions
+  \item An \code{explicit} constructor prevents also the implicit construction
+    of an object from a list of arguments between braces
     \begin{itemize}
-    \item Construction
-    \item Capacity (e.g. \code{size()}, \code{empty()})
-    \item Assignment (e.g. \code{=}, \code{assign()})
-    \item Comparison (\code{==}, \code{!=}, \code{<}, \code{>}, \code{<=}, \code{>=})
-    \item Access to a character (e.g. \code{[]}, \code{back()}, \code{front()})
-    \item Insertion/removal (e.g. \code{insert()}, \code{append()}, \code{erase()})
-    \item Search (e.g. \code{find()})
-    \item \ldots
+    \item e.g. in a function call or in a \code{return} statement
     \end{itemize}
   \end{itemize}
 
+  \begin{columns}[t]
+    \begin{column}{.45\textwidth}
+      \begin{codeblock}
+class Complex \{
+  Complex(double x, double y) \ddd
+  \ddd
+\};
+
+Complex operator+(\ddd)
+\{
+  \ddd
+  return \{r, i\}; // ok
+\}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.55\textwidth}
+      \begin{codeblock}
+class Complex \{
+  \alert{explicit} Complex(double x, double y) \ddd
+  \ddd
+\};
+
+Complex operator+(\ddd)
+\{
+  \ddd
+  // return \{r, i\}; // error
+  return Complex\{r, i\}; // ok
+\}\end{codeblock}
+
+    \end{column}
+
+  \end{columns}
+
+  \begin{itemize}
+  \item<2> Better start with explicit constructors, especially for one callable
+    with one argument, and relax the constraint later
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{operator@} in terms of \code{operator@=}}
+
+  \begin{itemize}
+  \item Typically, a symmetric \code{operator@} (e.g. \code{operator+}) is
+    implemented in terms of a member \code{operator@=} (e.g. \code{operator+=})
+    \begin{codeblock}
+Complex operator+(Complex const& lhs, Complex const& rhs)
+\{
+  Complex result\{lhs\}; // create the result as a copy of lhs
+  result += rhs;       // add rhs to the result
+  return result;       // return it
+\}\end{codeblock}
+
+  \item<2-> Typically, \code{operator@=} returns a reference to the object being
+    operated on
+
+    \begin{codeblock}
+class Complex \{
+  \ddd
+  Complex\alert{&} operator+=(Complex const& rhs) \{
+    r += rhs.r; i += rhs.i;
+    return \alert{*this};
+  \}
+\};\end{codeblock}
+
+    \code{*this} means \textit{self}, see later in the course
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Example: rational numbers}
@@ -3294,6 +3374,33 @@ norm2(Complex\{1.\}); // ok}\end{codeblock}
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Example: rational numbers \insertcontinuationtext}
+
+  \begin{codeblock}
+class Rational
+\{
+  int n_;
+  int d_;
+ public:
+  Rational(int num = 0, int den = 1) : n_\{num\}, d_\{den\}
+  \{
+    if (d_ == 0) \{
+      // construction must fail
+    \}
+    // reduce  
+    auto const g = std::gcd(n_, d_); // in <numeric>
+    n_ /= g;
+    d_ /= g;
+    // fix sign
+    if (d_ < 0) \{
+      n_ = -n_;
+      d_ = -d_;
+    \}
+  \}
+  \ddd
+\};\end{codeblock}
+
+\end{frame}
 
 \begin{frame}{Class invariant}
 
@@ -3539,35 +3646,6 @@ int main() \{
   \item Do \textbf{not} use an \code{assert} to validate input to the program
   \end{itemize}
 
-\end{frame}
-
-\begin{frame}[fragile]{\code{operator@} in terms of \code{operator@=}}
-
-  \begin{itemize}
-  \item Typically, a symmetric \code{operator@} (e.g. \code{operator+}) is
-    implemented in terms of a member \code{operator@=} (e.g. \code{operator+=})
-    \begin{codeblock}
-Complex operator+(Complex const& lhs, Complex const& rhs)
-\{
-  Complex result\{lhs\}; // create the result as a copy of lhs
-  result += rhs;       // add rhs to the result
-  return result;       // return it
-\}\end{codeblock}
-
-  \item<2-> Typically, \code{operator@=} returns a reference to the object being
-    operated on
-
-    \begin{codeblock}
-class Complex \{
-  \ddd
-  Complex\alert{&} operator+=(Complex const& rhs) \{
-    r += rhs.r; i += rhs.i;
-    return \alert{*this};
-  \}
-\};\end{codeblock}
-
-    \code{*this} means \textit{self}, see later in the course
-  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{The \code{switch} statement}
