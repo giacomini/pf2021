@@ -25,6 +25,10 @@
 
 1. Calcola perimetro, area, volume, ecc. di figure geometriche bidimensionali e tridimensionali, dati i loro parametri.
 
+1. Scrivi una funzione `pi` che calcola <img src="https://render.githubusercontent.com/render/math?math=\color{RoyalBlue} \large \pi"> usando la formula:
+
+    <p align="center"><img src="https://render.githubusercontent.com/render/math?math=\color{RoyalBlue} \Large \frac{1}{\pi} = \frac{2\sqrt{2}}{9801} \sum^\infty_{k=0} \frac{(4k)!\:(1103 %2B 26390k)}{(k!)^4\: 396^{4k}}"></p>
+
 1. Scrivi una funzione che ha come parametro un `char` e ritorna la corrispondente lettera minuscola se è una lettera, lo stesso carattere altrimenti.
 
     Ad esempio `A` &#8594; `a`, `a` &#8594; `a`, `;` &#8594; `;`
