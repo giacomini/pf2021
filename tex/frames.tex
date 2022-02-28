@@ -4429,3 +4429,1615 @@ template<class T, T v> struct integral_constant \{ \ddd \};}\end{codeblock}
   \end{itemize}
 
 \end{frame}
+
+\begin{frame}[fragile]{Namespaces}
+
+  \begin{itemize}
+  \item How can we guarantee that in a program composed of thousands of files,
+    written by thousands of people, using third-party libraries, there are no
+    conflicts between identifiers?
+  \item Namespaces are a mechanism to partition the space of names in a program
+    to prevent such conflicts
+
+    \begin{codeblock}
+// in <vector>
+\alert{namespace std \{}
+  template<class T> vector \{ \ddd \};
+\alert{\}}
+
+// in <algorithm>
+\alert{namespace std \{}
+  template<class It, class T> find(It first, It last, T const& v) \{ \ddd \}
+\alert{\}}\end{codeblock}
+
+  \item Namespaces can be re-opened, even in other files
+  \begin{itemize}
+  \item But namespace \code{std} cannot be re-opened by a user, unless
+    explicitly allowed by the specification
+  \end{itemize}
+  \item Namespaces can be nested
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Namespaces \insertcontinuationtext}
+
+  \begin{itemize}
+
+  \item<1-> A \textbf{namespace alias} gives another name to an existing namespace
+    \begin{codeblock}
+namespace ch = std::chrono;
+
+auto t0 = ch::system_clock::now(); // std::chrono::system_clock::now()\end{codeblock}
+  \item<2-> A \textbf{using declaration} makes a namespace symbol visible in the
+  current scope
+    \begin{codeblock}
+using std::string;
+
+string s;\end{codeblock}
+  \item<3-> A \textbf{using directive} makes \alert{all} the namespace symbols visible
+  in the current scope
+    \begin{codeblock}
+using namespace std;
+
+string s;\end{codeblock}
+
+  \item<4-> Avoid ``using directives''. They are especially bad in the global scope
+    and in header files
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Namespaces \insertcontinuationtext}
+
+  \begin{itemize}
+  \item It's good practice to put all entities of a software component into a namespace
+
+    \begin{codeblock}
+namespace stats \{
+
+struct Result \{ \ddd \};
+class Regression \{ \ddd \};
+
+Result fit(Regression const&);
+
+\}\end{codeblock}
+
+  \item Within a namespace, when using a name declared in that namespace, there is
+    no need to namespace-qualify it (i.e. prepending \textit{namespace}\code{::})
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Enumerations}
+
+  \begin{itemize}[<+->]
+  \item An \textit{enumeration} is a distinct type with named constants, called
+    \textit{enumerators}
+
+  \begin{codeblock}
+enum class Operator \{ Plus, Minus, Multiplies, Divides \};\end{codeblock}
+
+  \item When used, an enumerator is specified with the name of the enumeration
+    followed by the scope-resolution operator (\code{::})
+
+    \begin{codeblock}
+auto op\{Operator::Plus\}; // op is of type Operator\end{codeblock}
+
+  \item An enumeration plays well with \code{switch} statements
+
+    \begin{codeblock}
+double compute(Operator op, double left, double right)
+\{
+  switch (op) \{
+    case Operator::Plus:       return left + right;
+    case Operator::Minus:      return left - right;
+    case Operator::Multiplies: return left * right;
+    case Operator::Divides:    \ddd return left / right;
+    default: throw std::runtime_error\{"invalid operand"\};
+  \}
+\}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Enumerations \insertcontinuationtext}
+
+  \begin{itemize}[<+->]
+  \item An enumeration has an integral \textit{underlying type}, by default \code{int}
+  \item A different underlying type can be selected
+    \begin{codeblock}<.->{
+enum class byte : unsigned char \{ \};}\end{codeblock}
+
+    Note that in this case there are no enumerators $\rightarrow$ a way to define a
+    new integral type different from the underlying type
+
+  \item By default, an enumerator has the value of the previous enumerator
+    incremented by one and the first enumerator has value $0$
+  \item An enumerator can be given a value explicitly
+    \begin{codeblock}<.->{
+enum class Operator \{ Plus = -2, Minus, Multiplies = 42, Divides \};}\end{codeblock}
+    The values are respectively $-2$, $-1$, $42$ and $43$.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Enumerations \insertcontinuationtext}
+
+  \begin{itemize}[<+->]
+  \item All values of the underlying type are valid values for the enumeration
+    object
+
+    \begin{codeblock}<.->
+Operator op\{55\};  // ok\end{codeblock}
+
+  \item Conversions to the underlying type need to be explicit
+
+    \begin{codeblock}<.->
+int i\{Operator::Plus\};                     // error
+auto i\{static_cast<int>(Operator::Plus)\};  // ok\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Enumerations \insertcontinuationtext}
+
+  \begin{itemize}[<+->]
+  \item There is also a less strict version of an enumeration: the
+    \textit{unscoped} enumeration
+    \begin{codeblock}
+enum Operator \{ Plus, Minus, Multiplies, Divides \}; // NB no class\end{codeblock}
+
+  \item The symbols of the enumerators are visible in the enclosing scope
+    \begin{itemize}[<.->]
+    \item i.e. the enumerators are not specified with the name of the
+      enumeration followed by \code{::}
+    \end{itemize}
+
+    \begin{codeblock}<.->
+Operator op\{Plus\};  // ok, no need to use Operator::
+\end{codeblock}
+
+  \item The conversion to the underlying type is implicit
+    \begin{codeblock}<.->
+int i\{Plus\};  // ok\end{codeblock}
+
+  \item Prefer the scoped enumeration
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Hexadecimal notation}
+
+  \begin{columns}
+    \begin{column}{.75\textwidth}
+      \begin{itemize}
+      \item<1-> Numbers in hexadecimal notation are represented in base sixteen
+      \item<2-> Each digit has a value between zero and fifteen (included)
+      \item<2-> Sixteen symbols are needed for the digits
+        \begin{itemize}
+        \item 0 ... 9, A, B, C, D, E, F (also lowercase)
+        \end{itemize}
+      \item<3-> In C++ numeric literals (i.e. constants) can be expressed in hexadecimal
+        notation, prepending \code{0x} (or \code{0X}) to the hexadecimal representation
+        \begin{itemize}
+        \item \code{0x9 == 9}, \code{0xA == 10}, \code{0x10 == 16}
+        \end{itemize}
+      \item<3-> Easy conversion between hex and binary representation: each hex digit
+        corresponds to four bits
+      \item<4-> Hex literals are typically used to represent raw contents of memory or
+        memory addresses
+      \end{itemize}
+
+    \end{column}
+
+    \begin{column}{.25\textwidth}
+      \visible<3->{
+        \small{
+          \begin{tabular}[t]{|r|r|r|}
+            Hex & Dec & Bin \\
+            \hline
+            0 &  0 & 0000 \\
+            1 &  1 & 0001 \\
+            2 &  2 & 0010 \\
+            3 &  3 & 0011 \\
+            4 &  4 & 0100 \\
+            5 &  5 & 0101 \\
+            6 &  6 & 0110 \\
+            7 &  7 & 0111 \\
+            8 &  8 & 1000 \\
+            9 &  9 & 1001 \\
+            A & 10 & 1010 \\
+            B & 11 & 1011 \\
+            C & 12 & 1100 \\
+            D & 13 & 1101 \\
+            E & 14 & 1110 \\
+            F & 15 & 1111
+          \end{tabular}
+        }
+      }
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Pointers}
+
+  Where in memory does a given object reside?
+
+  \begin{tikzpicture}[
+      mem/.style={
+        node font=\ttfamily\scriptsize,
+        minimum height=.5cm,
+      },
+      location/.style={
+        mem,
+        draw=black!50,
+        minimum width=1.2cm,
+        fill=green!20!white,
+      },
+      address/.style={
+        mem,
+        draw=black,
+        minimum width=.3cm,
+        densely dotted,
+      },
+      every node/.style={
+        mem,
+      },
+      anchor=south west,
+      node distance=0,
+    ]
+
+    \visible<2->{\node (memory) at (0,0) [mem, draw=black!50, minimum width=.9\textwidth] {};}
+    \visible<3->{\node (begin mem) [address, right=of memory.west, "0x0000" above] {};}
+    \visible<3->{\node (end mem) [address, left=of memory.east, "0xffff" above] {};}
+
+    \visible<6-8>{\node (pp) at (1.2,0) [location, "pp" below] {\alert<6>{0xbad0}};}
+    \visible<6-8>{\node (addr pp) [address, right=of pp.west, "0xaa04" above] {};}
+
+    \visible<2-8>{\node (i) [location, right=0.5 of pp, "i" below,] {4321};}
+    \visible<3-8>{\node (addr i) [address, right=of i.west, "\alert<5>{0xab00}" above] {};}
+
+    \visible<5->{\node (p) [location, right=0.5 of i, "p" below] {
+        \alt<-6>
+            {\alert<5>{0xab00}}
+            {\alt<-11>
+              {\alert<7-8>{0xcd00}}
+              {\alert<12>{\textit{null}}}}};
+    }
+    \visible<5->{\node (addr p) [address, right=of p.west, "\alert<6>{0xbad0}" above] {};}
+
+    \visible<2->{\node (j) [location, right=0.5 of p, "j" below,] {
+        \alt<-9>
+            {1234}
+            {\alt<10>
+              {\alert<10>{5678}}
+              {\alert<11>{5679}}}};
+    }
+    \visible<3->{\node (addr j) [address, right=of j.west, "\alert<7>{0xcd00}" above] {};}
+
+    \visible<8>{\node (q) [location, right=0.5 of j, "q" below,] {\alert<8>{0xcd00}};}
+    \visible<8>{\node (addr q) [address, right=of q.west, "0xcb80" above] {};}
+
+    \visible<9->{\node (k) at (1.5,0) [location, "k" below,] {\alert<9>{1234}};}
+    \visible<9->{\node (addr k) [address, right=of k.west, "0xaacc" above] {};}
+
+    \draw<5-6>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]p.center) .. controls +(-1,.5) .. (addr i.north);
+    \draw<7-11>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]p.center) .. controls +(1,.5) .. (addr j.north);
+    \draw<6-8>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=-.1cm]pp.center) .. controls +(2,-.5) .. (addr p.south);
+    \draw<8>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]q.center) .. controls +(-1,.5) .. (addr j.north);
+
+  \end{tikzpicture}
+
+  \begin{codeblock}<4->{
+\visible<4->{std::cout <{}< \alert<4>{&}i;  // 0xab00, \alert<4>{address-of operator}}
+\visible<4->{std::cout <{}< \alert<4>{&}j;  // 0xcd00}
+\visible<5->{int\alert<5>{*} p = &i;      // \alert<5>{pointer declarator}}
+\visible<6->{std::cout <{}< &p;  // 0xbad0}
+\visible<6->{int\alert<5>{**} pp = &p;    // &p is of type int**}
+\visible<7->{p = &j;}
+\visible<8->{int* q = p;       // p and q point to the same object}}\end{codeblock}
+
+  \begin{codeblock}<9->{
+\visible<9->{std::cout <{}< \alert<9->{*}p; // 1234, \alert<9>{dereference} operator}
+\visible<9->{int k = \alert<9->{*}p;}
+\visible<10->{\alert<9->{*}p = 5678;}
+\visible<11->{++(\alert<9->{*}p);}
+\visible<12->{p = nullptr;}
+\visible<13->{\alert<9->{*}p; // \alert{undefined behavior}}}\end{codeblock}
+
+\visible<5->{Note that \code{int*} is a type by
+  itself}\visible<6->{ and so is \code{int**}}
+
+\end{frame}
+
+\begin{frame}[fragile]{Pointers \insertcontinuationtext}
+
+  \begin{itemize}
+  \item<1-> \textit{address-of} operator: \alert{\code{\&}}
+    \begin{itemize}
+    \item Given an object it returns its address in memory
+    \end{itemize}
+  \item<2-> \textit{dereference} operator: \alert{\code{*}}
+    \begin{itemize}
+    \item Given a pointer to an object it returns a reference to that object
+    \end{itemize}
+  \item<3-> \textit{structure dereference} operator: \alert{\code{->}}
+    \begin{itemize}
+    \item Given a pointer to an object of class/struct type, it returns a
+      reference to a member of that object
+    \end{itemize}
+    \begin{codeblock}
+struct S \{
+  int n;
+  void f();
+\};
+
+S q\{\ddd\};
+S* p = &q;
+p->n;        // equivalent to (*p).n
+p->f();      // equivalent to (*p).f()\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{The \code{this} pointer}
+
+  Within the body of a member function of a class \code{T}, the keyword
+  \code{this}
+  \begin{itemize}
+  \item is a pointer of type \code{T*} (or \code{T const*} if the method is
+    \code{const})
+  \item points to the object for which the method was called
+  \end{itemize}
+
+\begin{codeblock}<2->{
+struct Foo \{
+  void bar() \{
+    ... this ...;\uncover<4->{ // address of \alt<4>{alfa (i.e. \&alfa)}{beta (i.e. \&beta)}}
+  \}
+\};
+
+\uncover<3->{Foo alfa, beta;}
+\uncover<4->{alfa.bar();}
+\uncover<5>{beta.bar();}}\end{codeblock}
+
+    \begin{codeblock}<6->{
+class Complex \{
+  \ddd
+  Complex\alert{&} operator+=(Complex const& rhs) \{
+    r += rhs.r; i += rhs.i;
+    return \alert{*this};
+  \}
+\};}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Nested class}
+  \begin{itemize}
+
+  \item A class can be defined within the definition of another class
+    \begin{itemize}
+    \item in either the public or private section
+    \end{itemize}
+
+    \begin{codeblock}
+class Regression \{
+  \ddd
+  \alert{class Result \{ \ddd \};}
+  Result fit() const \{ \ddd \}
+\};
+
+Regression reg;
+\ddd
+Regression::Result result = reg.fit();\end{codeblock}
+
+  \item<2-> The nested class can access the private members of the outer class
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Type alias}
+
+  \begin{itemize}
+  \item A type alias is another name for an existing type
+
+  \begin{codeblock}
+using Length = double;
+typedef double Length; // equivalent, old alternative
+
+Length len = 1.; // len is of type double\end{codeblock}
+
+  \item<2-> A type alias does \textbf{not} introduce a new type
+
+    \begin{codeblock}<2->{
+void walk(double) \{ \ddd \}
+void walk(Length) \{ \ddd \} // error, redefinition of walk}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Type alias \insertcontinuationtext}
+
+  \begin{itemize}
+  \item Type aliases are often used to declare types within a class
+
+    \begin{codeblock}
+class FitResult \{ \ddd \};
+
+class Regression \{
+  \ddd
+ public:
+  \alert{using Result = FitResult;}
+  Result fit() const \{ \ddd \}
+\};
+
+Regression::Result result = reg.fit(); // result is of type FitResult\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Structured binding (C++17)}
+  \begin{itemize}
+  \item A \textit{structured binding} declaration declares multiple variables
+    and initializes them from values of struct members (and other entities,
+    following a certain \textit{protocol})
+    \begin{codeblock}
+struct Point \{
+  double x;
+  double y;
+\};
+
+Point p\{1.,2.\};
+auto [a, b] = p;
+std::cout << a << \upquote{ } << b; // print 1 2\end{codeblock}
+
+  \item<2-> The variables can be declared as (const) references to the struct members
+    \begin{codeblock}
+Point p\{1.,2.\};
+auto& [a, b] = p; // a is a ref to p.x, b is a ref to p.y
+a = 3.;
+b = 4.;
+std::cout << p.x << \upquote{ } << p.y; // print 3 4\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The C++ standard library}
+
+  \begin{itemize}
+  \item The standard library contains components of general use
+    \begin{itemize}[<.->]
+    \item \alert<2>{containers (data structures)}
+    \item \alert<2>{algorithms}
+    \item strings
+    \item input/output
+    \item mathematical functions
+    \item random numbers
+    \item regular expressions
+    \item concurrency and parallelism
+    \item filesystem
+    \item \ldots
+    \end{itemize}
+
+  \item<2-> The subset containing containers and algorithms is known as STL
+    (Standard Template Library)
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Containers of objects}
+  \begin{itemize}
+  \item A program often needs to manage collections of objects
+    \begin{itemize}
+    \item e.g. a string of characters, a dictionary of words, a list of
+      particles, a matrix, \ldots
+    \end{itemize}
+  \item<2-> A \textit{container} is an object that contains other objects
+  \item<2-> The C++ Standard Library provides a few container classes
+    \begin{itemize}[<.->]
+    \item implemented as class templates
+    \item different characteristics and operations, some common traits
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::vector<T>}}
+
+  \alert{Dynamic} container of elements of type \code{T}
+  \begin{itemize}
+  \item its size can vary at runtime
+  \item layout is contiguous in memory
+  \item container you should use by default
+  \item<4-> be careful with initialization: \code{\{\}} vs \code{()}
+    \begin{itemize}
+    \item check if there is a constructor that takes an
+      \code{std::initializer_list}
+    \end{itemize}
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+#include <vector>
+
+std::vector<int> a;      // empty vector of ints
+\visible<3->{std::vector<int> b\{2\};   // one element, initialized to 2}
+\visible<4->{std::vector<int> c(2);   // two elements (!), value-initialized (0 for int)}
+\visible<5->{std::vector<int> d\{2,1\}; // two elements, initialized to 2 and 1
+std::vector<int> e(2,1); // two elements, both initialized to 1}
+
+\visible<6->{
+auto f = b; // make a copy, f and b are two distinct objects
+f == b;     // true}}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::vector<T>} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The \code{size} method gives the number of elements in the vector
+  \item The \code{empty} method tells if the vector is empty
+  \item \code{operator[]} gives access to the $i^{th}$ element
+  \end{itemize}
+
+  \begin{codeblock}
+std::vector<int> vec\{1,2,3\}; // \{4,2,7\}
+
+assert(!vec.empty());
+std::cout << vec.size(); // print 3
+vec[1] = 5;              \visible<2->{// vec is now \{4,5,7\}}
+std::cout << vec[1];     // print 5\end{codeblock}
+
+  \visible<3->{
+    \begin{center}
+      \huge\alert{Counting starts from $0$!}
+    \end{center}
+  }
+
+  \begin{codeblock}<3->{
+vec[0];            // first element
+vec[1];            // second element
+vec[vec.size()-1]; // vec[2], third and last element
+vec[vec.size()];   // vec[3], element doesn\textquotesingle{}t exist, undefined behaviour!}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::vector<T>} \insertcontinuationtext}
+  \begin{itemize}
+  \item The \code{push_back} method adds an element at the end of the vector
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+vec.push_back(-2);       // vec is now \{4,5,7,-2\}
+vec.push_back(0);        // vec is now \{4,5,7,-2,0\}
+std::cout << vec.size(); // print 5}\end{codeblock}
+
+    \begin{codeblock}<3->{
+// fill a vector with numbers read from standard input
+std::vector<double> v;
+for (double d; std::cin >> d; ) \{
+  v.push_back(d);
+\}}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Iterators and ranges}
+  \begin{itemize}
+  \item An \alert{iterator} is an object that indicates a position within a
+    \alert{range}
+    \begin{itemize}
+    \item A container, such as a vector, is a range
+    \end{itemize}
+  \item<2-> In fact, a pair of iterators [\textit{first}, \textit{last})
+    represents a range
+    \begin{itemize}
+    \item the range is \textit{half-open}
+      \begin{itemize}
+      \item \textit{first} points to the first element of the range
+      \item \textit{last} points to \textbf{one past} the last element of the
+        range
+      \end{itemize}
+    \item \textit{first} \code{==} \textit{last} means the range is empty
+    \end{itemize}
+
+  \begin{tikzpicture}[
+    anchor=south west,
+    node distance=0,
+    ]
+    \node at (0,0) [memory] {};
+
+    \node at (2.9,-0.1) [
+        rectangle,
+        fill=green!10!white,
+        draw=black!40,
+        minimum width=3.2cm,
+        minimum height=0.7cm,
+      ] {};
+    \node (a0) at (3,0) [word] {123};
+    \node (a1) [word, right=of a0] {456};
+    \node (a2) [word, right=of a1] {789};
+    \node (a3) [dotted word, right=of a2] {};
+    \node (first) [word, below=.5cm of a0, label={180:\textit{\scriptsize first}}] {};
+    \node (last) [word, below=.5cm of a3, label={180:\textit{\scriptsize last}}] {};
+    \draw[->] (first.north) -- (a0.south);
+    \draw[->] (last.north) --  (a3.south);
+
+  \end{tikzpicture}
+
+  \item<3-> Ranges are typically obtained from containers calling methods
+    \code{begin} and \code{end}
+    \begin{codeblock}
+std::vector<int> v \{\ddd\};
+auto first = v.begin(); // std::vector<int>::iterator
+auto last = v.end();    // std::vector<int>::iterator\end{codeblock}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Operations on iterators}
+
+  \begin{itemize}
+  \item Syntactically, operations on iterators are inspired by pointers
+  \item There is a minimal set of operations supported by an iterator \code{it}
+
+  \item \code{*it} gives access to the element pointed to by \code{it}
+
+    \begin{codeblock}
+std::vector<int> v \{1,2,3\};
+auto it = v.begin();
+std::cout << *it; // print 1
+*it = 4;          // v is now \{4,2,3\}\end{codeblock}
+
+      \begin{codeblock}
+auto it = v.end();
+
+*it; // undefined behaviour, it doesn\textquotesingle{}t point inside the range\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Operations on iterators \insertcontinuationtext}
+
+  \begin{itemize}
+  \item \code{it->\textit{member}} gives access to a member (data or
+    function) of the element pointed to by \code{it}
+    \begin{itemize}
+    \item equivalent to \code{(*it).\textit{member}}, note the parenthesis
+    \end{itemize}
+
+    \begin{columns}
+      \begin{column}{.7\textwidth}
+        \begin{codeblock}
+std::vector<Point> v \{Point\{1,2\}, Point\{3,4\}\};
+auto it = v.begin();
+std::cout << (*it).x; // print 1
+std::cout << it->x;   // equivalent\end{codeblock}
+      \end{column}
+      \begin{column}{.2\textwidth}
+        \begin{codeblock}
+struct Point \{
+  double x;
+  double y;
+\};\end{codeblock}
+      \end{column}
+    \end{columns}
+
+    \begin{codeblock}
+std::vector<std::string> v \{"hello", "world"\};
+auto itv = v.begin();    // itv points to the first string in the vector
+auto its = itv->begin(); // its points to the first character
+                         //   of the first string (\upquote{h});
+                         //   a string is a container of characters\end{codeblock}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Operations on iterators \insertcontinuationtext}
+
+  \begin{itemize}
+  \item \code{++it} advances \code{it} so that it points to the next element in
+    the range
+    \begin{codeblock}
+std::vector<int> v \{123, 456, 789\};
+auto first = v.begin();
+auto last = v.end();
+std::cout << *first; // print 123
+\visible<2->{++first;}
+\visible<2->{std::cout << *first; // print 456}\end{codeblock}
+
+  \end{itemize}
+
+  \begin{tikzpicture}[
+    anchor=south west,
+    node distance=0,
+    ]
+    \node at (0,0) [memory] {};
+
+    \node at (2.9,-0.1) [
+    rectangle,
+    fill=green!10!white,
+    draw=black!40,
+    minimum width=3.2cm,
+    minimum height=0.7cm,
+    ] {};
+    \node (a0) at (3,0) [word] {123};
+    \node (a1) [word, right=of a0] {456};
+    \node (a2) [word, right=of a1] {789};
+    \node (a3) [dotted word, right=of a2] {};
+    \node (first) [word, below=.5cm of a0, label={180:\textit{\scriptsize first}}] {};
+    \node (last) [word, below=.5cm of a3, label={180:\textit{\scriptsize last}}] {};
+    \visible<1>{\draw[->] (first.north) -- (a0.south);}
+    \visible<2->{\draw[->] (first.north) -- (a1.south);}
+    \draw[->] (last.north) --  (a3.south);
+  \end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}[fragile]{Operations on iterators \insertcontinuationtext}
+  \begin{itemize}
+  \item<1-> \code{it1 == it2} (\code{it1 != it2}) tells if \code{it1} and
+    \code{it2} point to the same element (different elements) of the range
+    \begin{codeblock}
+++first; ++first;
+first == last;  // true\end{codeblock}
+  \item<2-> Other operations (\code{--it}, \code{it~+~n}, \code{it~+=~n},
+    \code{it~<~it2}, \ldots) may be supported, depending on the underlying range
+    \begin{itemize}
+    \item vector iterators support them all
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Example: add all elements of a vector\\(Iteration on a container)}
+
+  \begin{codeblock}
+std::vector<int> c \{ \ddd \};\end{codeblock}
+
+  \begin{codeblock}<2->{
+auto sum = 0;
+for (int i = 0, n = c.size(); i != n; ++i) \{
+  auto const& v = c[i];
+  sum += v;
+\}}\end{codeblock}
+
+  \begin{codeblock}<3->{
+auto sum = 0;
+for (auto it = c.begin(), end = c.end(); it != end; ++it) \{
+  auto const& v = *it;
+  sum += v;
+\}}\end{codeblock}
+
+  \begin{codeblock}<4->{
+auto sum = 0;
+for (auto const& v : c) \{
+  sum += v;
+\}}\end{codeblock}
+
+  \begin{codeblock}<5->{
+auto sum = std::accumulate(c.begin(), c.end(), 0);} // algorithm\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::vector<T>} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The \code{erase} method removes the element pointed to by the iterator
+    passed as argument (must not be \code{end()})
+    \begin{codeblock}
+// remove the central element
+auto it = v.begin() + v.size() / 2; // iterator to the middle element
+v.erase(it);                        // size decreased by 1\end{codeblock}
+
+  \item<2-> The \code{erase} method can remove a range, passing two iterators
+    \begin{codeblock}<2->{
+// erase the 2nd half of the vector
+auto it = v.begin() + v.size() / 2; // iterator to the middle element
+v.erase(it, v.end());               // size ~halved here}\end{codeblock}
+
+\item<3-> In general, iterators pointing to erased elements are not valid anymore
+  \begin{itemize}
+  \item For a vector, iterators pointing to elements following the erased one are
+    also invalidated, including the end iterator
+  \end{itemize}
+  \begin{codeblock}
+v.erase(it);
+*it;       // undefined behaviour (UB)
+++it;      // UB, be careful in loops
+it = \ddd;  // ok\end{codeblock}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::vector<T>} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The \code{insert} method inserts an element before the position
+    indicated by an iterator
+    \begin{codeblock}
+// insert the value 42 in the middle of the vector
+auto it = v.begin() + v.size() / 2;
+v.insert(it, 42);                   // size increased by 1\end{codeblock}
+
+  \item<2-> Other overloads of \code{insert} are available, see reference
+  \item<3-> Existing iterators pointing to elements after the insertion position
+    are invalidated
+    \begin{itemize}
+    \item If a memory reallocation occurs (see later), all existing iterators
+      pointing into the vector are invalidated
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::array<T, N>}}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+
+  Container of \code{N} elements of type \code{T}
+  \begin{itemize}
+  \item \code{N} known at compile time
+  \item layout is contiguous in memory
+  \end{itemize}
+
+\begin{codeblock}<2->{
+#include <array>
+
+// 2 ints, uninitialized
+std::array<int,2> a;
+
+// 2 ints, initialized to 1 and 2
+std::array<int,2> b\{1,2\};
+
+// 2 ints, value-initialized (0 for int)
+std::array<int,2> c\{\};
+
+// 2 ints, initialized to 1 and 0
+std::array<int,2> d\{1\};
+
+\visible<4->{// make a copy
+auto e = b;  // std::array<int,2>
+assert(e == b);}}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.4\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        array/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=1.2cm,
+          minimum width=2.2cm,
+          draw=black!40,
+          fill=green!10!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        anchor=south west
+        ]
+        \visible<3->{
+          \node (stack) at (0,0) [
+          mem,
+          minimum height=6.5cm
+          ] {};
+          \node (main) [
+          frame,
+          minimum height=3.5cm,
+          below=3ex of stack.north
+          ] {};
+          \node (b) [
+          array,
+          below=3ex of main.north,
+          label={180:\scriptsize\tt b}
+          ] {};
+          \node (b0) [
+          var,
+          above=.1cm of b.south,
+          ] {\tiny 1};
+          \node (b1) [
+          var,
+          above=0pt of b0.north,
+          ] {\tiny 2};
+        }
+        \visible<4->{
+          \node (e) [
+          array,
+          above=3ex of main.south,
+          label={180:\scriptsize\tt e}
+          ] {};
+          \node (e0) [
+          var,
+          above=.1cm of e.south,
+          ] {\tiny 1};
+          \node (e1) [
+          var,
+          above=0pt of e0.north,
+          ] {\tiny 2};
+        }
+      \end{tikzpicture}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::array<T, N>} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The \code{size} method gives the number of elements in the array (which
+    corresponds to \code{N})
+  \item \code{operator[]} gives access to the $i^{th}$ element
+    \begin{codeblock}
+int const M = 4;
+std::array<int, M> arr\{1,2\}; // \{1,2,0,0\}
+
+std::cout << arr.size(); // print 4
+arr[1] = 3;              // arr is now \{1,3,0,0\}
+std::cout << arr[1];     // print 3\end{codeblock}
+
+  \item \code{begin}, \code{end}, \code{empty}, \code{front}, \code{back} methods
+  \item No \code{push_back} or \code{insert}, the size is fixed.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Type aliases \insertcontinuationtext}
+
+  \begin{itemize}
+  \item Type aliases can be templates
+  \end{itemize}
+
+  \begin{codeblock}
+template<class \alert{T}> using Array3 = std::array<\alert{T}, 3>; // array of 3 T's
+
+Array3<\alert{double}> a; // a is std::array<double, 3>\end{codeblock}
+
+\begin{codeblock}
+template<int \alert{N}> using ArrayOfBytes = std::array<std::byte, \alert{N}>; // array of N bytes
+
+ArrayOfBytes<\alert{16}> b; // b is std::array<std::byte, 16>\end{codeblock}
+\end{frame}
+
+\begin{frame}[fragile]{Algorithms}
+
+  \begin{itemize}
+  \item Generic functions that operate on \alert{ranges} of objects
+  \item Implemented as function templates
+  \end{itemize}
+
+  \begin{itemize}
+  \item<2-> Sum all the elements of a container \code{cont}
+    \begin{codeblock}
+auto sum = 0;
+for (int i = 0; i != cont.size(); ++i) \{
+  sum += cont[i];
+\}\end{codeblock}
+
+    \begin{codeblock}<3->{
+auto sum = std::accumulate(cont.begin(), cont.end(), 0); // better}\end{codeblock}
+
+  \item<4-> Find an element equal to \code{val} in a container \code{cont}
+    \begin{codeblock}
+auto it = cont.begin();
+auto const end = cont.end();
+for (; it != end; ++it) \{
+  if (*it == val) \{
+    break;
+  \}
+\}\end{codeblock}
+
+    \begin{codeblock}<5->{
+auto it = std::find(cont.begin(), cont.end(), val); // better}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Generic programming}
+
+  \begin{itemize}
+  \item A style of programming in which \alert{algorithms} are written
+    in terms of \alert{concepts}
+
+    \begin{codeblock}
+template<class InputIterator, class Tp>
+Tp \textbf{accumulate}(InputIterator first, InputIterator last, Tp init)
+\{
+    for (; first \alert{!=} last; \alert{++}first)
+        init \alert{=} init \alert{+} \alert{*}first;
+    return init;
+\}\end{codeblock}
+
+  \begin{codeblock}
+template <class Iterator, class T>
+Iterator \textbf{find}(Iterator first, Iterator last, const T\& value)
+\{
+  for (; first \alert{!=} last; \alert{++}first)
+    if (\alert{*}first \alert{==} value) break;
+  return first;
+\}\end{codeblock}
+
+  \item A concept is a set of requirements that a type needs to satisfy
+    \begin{itemize}
+    \item e.g. supported expressions, nested typedefs, memory layout, \ldots
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Hierarchy of iterators}
+
+  \begin{columns}[T]
+    \begin{column}{.55\textwidth}
+      \begin{codeblock}<2->{\tiny
+// InputIterator (find)
+while (first \alert{!=} last \&\& !(\alert{*}first == value)) \alert{++}first;}\end{codeblock}
+
+      \begin{codeblock}<3->{\tiny
+// OutputIterator (generate_n)
+for (; n > 0; \alert{++}first, --n) \alert{*}first \alert{=} gen();}\end{codeblock}
+
+      \begin{codeblock}<4->{\tiny
+// ForwardIterator (generate)
+for (; first \alert{!=} last; \alert{++}first) \alert{*}first \alert{=} gen();}\end{codeblock}
+
+      \begin{codeblock}<4->{\tiny
+// ForwardIterator (adjacent_find)
+auto i = \alert{first};
+while (\alert{++i} != last) \ddd}\end{codeblock}
+
+      \begin{codeblock}<5->{\tiny
+// BidirectionalIterator (reverse)
+if (first == \alert{--}last) break;}\end{codeblock}
+
+      \begin{codeblock}<6->{\tiny
+// RandomAccessIterator (reverse)
+for (; first \alert{<} --last; ++first) \ddd}\end{codeblock}
+    \end{column}
+
+    \begin{column}{.45\textwidth}
+      \begin{tikzpicture}
+        [auto,
+        box/.style = {rectangle, draw=black, node font=\scriptsize, align=flush center},
+        line/.style      = {draw}]
+        \matrix [column sep=-15mm,row sep=8mm,ampersand replacement=\&]
+        {
+          \visible<2->{        \node [box] (input) {InputIterator\\{\tiny read, increment, comparison}};} \\
+          \& \& \visible<3->{\node [box] (output) {OutputIterator\\{\tiny write, increment}};} \\
+          \& \visible<4->{\node [box] (forward) {ForwardIterator\\{\tiny multiple passes}};} \\
+          \& \visible<5->{\node [box] (bidirectional) {BidirectionalIterator\\{\tiny decrement}};} \\
+          \& \visible<6->{\node [box] (randomaccess) {RandomAccessIterator\\{\tiny random access}};} \\
+        };
+        \begin{scope}[every path/.style=line]
+          \visible<4->{\path (input)  -- (forward);}
+          \visible<4->{\path (output)  -- (forward);}
+          \visible<5->{\path (forward) -- (bidirectional);}
+          \visible<6->{\path (bidirectional) -- (randomaccess);}
+        \end{scope}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Examples of algorithms}
+
+  \begin{description}[<+->]
+  \item[Non-modifying] \code{all_of any_of for_each count count_if mismatch
+      equal find find_if adjacent_find search \ldots}
+  \item[Modifying] \code{copy copy_if fill generate transform remove replace
+      swap reverse rotate shuffle sample unique \ldots}
+  \item[Partitioning] \code{partition stable_partition \ldots}
+  \item[Sorting] \code{sort partial_sort nth_element \ldots }
+  \item[Set] \code{includes set_union set_intersection \ldots}
+  \item[Min/Max] \code{min max minmax clamp \ldots}
+  \item[Comparison] \code{equal lexicographical_compare \ldots}
+  \item[Numeric] \code{iota accumulate inner_product partial_sum
+      adjacent_difference reduce \ldots}
+  \item \ldots
+  \end{description}
+\end{frame}
+
+\begin{frame}[fragile]{Algorithms in action}
+
+  \begin{codeblock}
+std::array a = \{ 23, 54, 41, 0, 18 \};
+
+// sort the array in ascending order
+std::sort(std::begin(a), std::end(a));
+
+// sum up the array elements, initializing the sum to 0
+auto s = std::accumulate(std::begin(a), std::end(a), 0);
+
+// append the partial sums of the array elements into a vector
+std::vector<int> v;
+std::partial\_sum(std::begin(a), std::end(a), std::back\_inserter(v));
+
+auto p = std::inner_product(std::begin(a), std::end(a), std::begin(v), 0);
+
+// find the first element with value 42, if existing
+auto it = std::find(std::begin(v), std::end(v), 42);\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Why using standard algorithms}
+
+  \begin{itemize}[<+->]
+  \item They are correct
+  \item They express intent more clearly than a raw \code{for}/\code{while} loop
+  \item They are efficient
+    \begin{itemize}
+    \item They give computational complexity guarantees
+    \item How fast do they run? how much additional memory do they need?
+    \end{itemize}
+  \item They enable \textit{parallelism for the masses}
+    \begin{itemize}[<.->]
+    \item C++17
+    \end{itemize}
+  \end{itemize}
+
+  \begin{codeblock}<+->{
+#include <execution>
+
+std::vector<int> v = \ddd;
+
+std::sort(\alert{std::execution::par}, v.begin(), v.end());
+
+auto it = std::find(\alert{std::execution::par}, v.begin(), v.end(), 123);
+}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}{Computational complexity}
+
+  \begin{itemize}
+  \item<1-> A measure of how many resources a computation will need for a given
+    input size
+    \begin{itemize}
+    \item Typically the resource is time but can be space (memory)
+    \item For example: how many comparisons does the sort algorithm do for a
+      range of one million elements?
+    \end{itemize}
+  \item<1-> Of typical interest are the average case and the worst case
+  \item<2-> The complexity is a function $f$ of the input size $n$, but usually only
+    the asymptotic behaviour is given
+    \begin{itemize}
+    \item Big-O notation
+    \item $\mathcal{O}(g(n))$ means that, for a large $n$,
+      $f \le cg(n)$, for some constant $c$
+    \item Note how constant factors don't matter in big-O notation
+    \end{itemize}
+  \item<3-> For example
+    \begin{itemize}
+    \item \code{std::vector<T>::push_back} is (amortized) $\mathcal{O}(1)$
+    \item \code{std::binary_search} is $\mathcal{O}(\log{}n)$
+    \item \code{std::find} is $\mathcal{O}(n)$
+    \item \code{std::sort} is $\mathcal{O}(n\log{}n)$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Computational complexity \insertcontinuationtext}
+  \begin{center}
+    \includegraphics[height=.8\textheight]{images/O}
+    \par
+    \tiny{Cmglee / CC BY-SA (https://creativecommons.org/licenses/by-sa/4.0)}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Functions}
+
+  \begin{itemize}
+  \item A function associates a sequence of statements (the function
+    \textit{body}) with a name and a list of zero or more parameters
+
+  \item A function may return a value
+  \item Multiple functions can have the same name $\rightarrow$
+    \textit{overloading}
+    \begin{itemize}
+    \item different parameter lists
+    \end{itemize}
+
+  \item<2-> A function returning a \code{bool} is called a \textit{predicate}
+    \begin{codeblock}
+bool less(int n, int m) \{ return n < m; \}\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Algorithms and functions}
+
+  \begin{codeblock}{\tiny
+template <class Iterator, class T>
+Iterator find(Iterator first, Iterator last, \alert{const T\& value})
+\{
+  for (; first != last; ++first)
+    if (\alert{*first == value})
+      break;
+  return first;
+\}
+
+auto it = find(v.begin(), v.end(), 42);}\end{codeblock}
+
+  \begin{codeblock}<2->
+template <class Iterator, class Predicate>
+Iterator find_if(Iterator first, Iterator last, \alert{Predicate pred})
+\{
+  for (; first != last; ++first)
+    if (\alert{pred(*first)})         // unary predicate
+      break;
+  return first;
+\}
+
+\uncover<3->{bool lt42(int n) \{ return n < 42; \}}
+
+\uncover<4->{auto it = find_if(v.begin(), v.end(), lt42);}
+\uncover<6->{auto it = find_if(v.begin(), v.end(), [](int n) \{ return n < 42; \} );}\end{codeblock}
+
+\uncover<5->{Some algorithms are customizable passing a function}
+\end{frame}
+
+\begin{frame}[fragile]{Function objects}
+
+  A mechanism to define \textit{something-callable-like-a-function}
+  \begin{itemize}
+  \item<4-> A class with an \texttt{operator()}
+  \end{itemize}
+
+  \begin{columns}[t]
+
+    \begin{column}{.5\textwidth}
+
+      \begin{codeblock}<2->{
+\invisible{struct LessThan42 \{}
+auto \alert<2,4>{lt42}(int n)
+\{
+  return n < 42;
+\}
+
+\invisible{
+LessThan42 lt42\{\};}
+auto b = \alert<2,7>{lt42(}32\alert<2,7>{)}; // true
+
+\uncover<3->{vector v\{61,32,51\};
+auto it = find_if(
+    begin(v), end(v),
+    \alert<3,8>{lt42}
+); // *it == 32}}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+
+      \begin{codeblock}<4->{
+\alert<4>{struct LessThan42 \{}
+  auto \alert<4>{operator()}(int n) \alert<4>{const}
+  \{
+    return n < 42;
+  \}
+\alert<4>{\};}
+
+\uncover<5->{\alt<5>{LessThan42 lt42\{\};}{auto lt42 = LessThan42\{\};}}
+\uncover<7->{auto b = \alert<7>{lt42(}32\alert<7>{)}; // true}
+
+\uncover<8,9>{vector v\{61,32,51\};
+auto it = find_if(
+    begin(v), end(v),
+    \alert{\alt<8>{lt42}{LessThan42\{\}}}
+); // *it == 32}}\end{codeblock}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Function objects \insertcontinuationtext}
+  A function object, being the instance of a class, can have state
+  \begin{codeblock}<2->{
+class LessThan \{
+  \alert<2>{int m\_;}
+ public:
+  explicit \alert<2>{LessThan(int m) : m\_\{m\} \{\}}
+  auto operator()(int n) const \{
+    return n < m_;
+  \}
+\};
+
+\uncover<3->{LessThan lt42\{42\};
+auto b1 = \alt<-5>{lt42}{\alert<6>{LessThan\{42\}}}(32); // true}
+
+\uncover<4->{LessThan lt24\{24\};
+auto b2 = \alt<-5>{lt24}{\alert<6>{LessThan\{24\}}}(32); // false}
+
+\uncover<5->{vector v\{61,32,51\};
+auto i1 = find_if(\ldots, \alt<-5>{lt42}{\alert<6>{LessThan\{42\}}}); // *i1 == 32
+auto i2 = find_if(\ldots, \alt<-5>{lt24}{\alert<6>{LessThan\{24\}}}); // i2 == end, i.e. not found}}\end{codeblock}
+
+  \uncover<6>{}
+
+\end{frame}
+
+\begin{frame}[fragile]{Function objects \insertcontinuationtext}
+  An example from the standard library
+
+  \begin{codeblock}
+#include <random>
+
+// random bit generator
+std::default_random_engine gen;
+
+// generate N 32-bit unsigned integer numbers
+for (int n = 0; n != N; ++n) \{
+  std::cout <{}< \alert{gen()} <{}< \bslashn;
+\}
+
+// generate N floats distributed normally (mean: 0., stddev: 1.)
+std::normal\_distribution<float> dist;
+for (int n = 0; n != N; ++n) \{
+  std::cout <{}< \alert{dist(gen)} <{}< \bslashn;
+\}
+
+// generate N ints distributed uniformly between 1 and 6 included
+std::uniform\_int\_distribution<> roll\_dice(1, 6);
+for (int n = 0; n != N; ++n) \{
+  std::cout <{}< \alert{roll\_dice(gen)} <{}< \bslashn;
+\}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Lambda expression}
+
+  \begin{itemize}
+  \item A concise way to create an unnamed function object
+  \item Useful to pass actions/callbacks to algorithms, threads, frameworks,
+    \ldots
+  \end{itemize}
+
+  \begin{columns}[t]
+
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<2->{
+struct LessThan42 \{
+  auto operator()(int n)
+  \{
+    return n < 42;
+  \}
+\};
+
+class LessThan \{
+  int m\_;
+ public:
+  explicit LessThan(int m)
+    : m\_\{m\} \{\}
+  auto operator()(int n) const
+  \{
+    return n < m_;
+  \}
+\};}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<2->{
+find_if(\ldots, LessThan42\{\});
+
+\uncover<3->{find_if(\ldots, \alert<3>{[](int n) \{}
+               return n < 42;
+             \alert<3>{\}}
+);}
+
+find_if(\ldots, LessThan\{m\});
+
+\uncover<4->{\only<4>{\alert{int m = \ddd;}}
+find_if(\ldots, [\alert<4->{\only<4>{=}\only<5>{m = \ddd}}](int n) \{
+              return n < \alert<4->{m};
+             \}
+);}}\end{codeblock}
+    \end{column}
+
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Lambda closure}
+  The evaluation of a lambda expression produces an unnamed function object (a
+  \textit{closure})
+  \begin{itemize}
+  \item The \texttt{operator()} corresponds to the code of the body of the
+    lambda expression
+  \item The data members are the captured local variables
+  \end{itemize}
+
+  \vskip -3mm
+
+  \begin{columns}[t]
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<2->{
+\uncover<4-6>{int v = 42;}
+
+\uncover<2->{auto lt = [}\temporal<5-6>{}{=}{v = 42}\uncover<2->{]}\uncover<3->{(\alt<-7>{int }{auto} n)\uncover<9->{ -> bool}
+           \{ return n < v; \}}
+
+\uncover<6->{auto r = lt(5); // true}}\end{codeblock}
+
+      \uncover<7>{}
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<2->{
+\uncover<2->{class SomeUniqueName \{
+  \uncover<5->{int v\_;}
+ public:
+  \uncover<5->{explicit SomeUniqueName(int v)
+    : v\_\{v\} \{\}}
+  \uncover<8->{template<typename T>}
+  \alt<-8>{auto}{bool } operator()\uncover<3->{(\alt<-7>{int}{T  } n)} const
+  \uncover<3->{\{ return n < v\uncover<5->{\_}; \}}
+\};}
+
+\uncover<4->{int v = 42;}
+\uncover<2->{auto lt = SomeUniqueName\{}\uncover<5->{v}\uncover<2->{\};}
+\uncover<6->{auto r = lt(5); // true}}\end{codeblock}
+    \end{column}
+  \end{columns}
+
+  \begin{itemize}
+  \item<10-> Each lambda is of a different type
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Lambda capture}
+
+  \begin{itemize}
+  \item Automatic variables used in the body of the lambda need to be captured
+    \begin{itemize}
+    \item<2-> \texttt{[]} capture nothing
+    \item<2-> \texttt{[=]} capture all (what is needed) by value
+    \item<2-> \texttt{[k]} capture \texttt{k} by value
+    \item<3-> \texttt{[\&]} capture all (what is needed) by reference
+    \item<3-> \texttt{[\&k]} capture \texttt{k} by reference
+    \item<4-> \texttt{[=, \&k]} capture all by value but \texttt{k} by reference
+    \item<4-> \texttt{[\&, k]} capture all by reference but \texttt{k} by value
+    \end{itemize}
+
+    \vskip -3mm
+
+    \begin{columns}[T]
+      \begin{column}{.5\textwidth}
+        \begin{codeblock}<2->{
+int v = 3;
+auto lam = [\only<3->{\alert<3>{&}}v] \{\};}\end{codeblock}
+      \end{column}
+
+      \begin{column}{.5\textwidth}
+        \begin{codeblock}<2->{
+class SomeUniqueName \{
+  int\only<3->{\alert<3>{&}} v\_;
+ public:
+  explicit SomeUniqueName(int\only<3->{\alert<3>{&}} v)
+    : v\_\{v\} \{\}
+  \ddd
+\};
+
+auto lam = SomeUniqueName\{v\};}\end{codeblock}
+      \end{column}
+    \end{columns}
+
+  \item<5-> Global variables are available without being captured
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Lambda: \texttt{const} and \texttt{mutable}}
+  \begin{itemize}
+  \item By default the call to a lambda is \texttt{const}
+    \begin{itemize}
+    \item Variables captured by value are not modifiable
+    \end{itemize}
+  \item<2-> A lambda can be declared \texttt{mutable}
+    \begin{itemize}
+    \item The parameter list is mandatory
+    \end{itemize}
+  \item<3-> If present, the explicit return type goes after \code{mutable}
+  \end{itemize}
+
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<1->{
+[]\only<2->{\alert<2>{() mutable}}\only<3->{\alert<3>{ -> void}} \{\};}\end{codeblock}
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}<1->{
+struct SomeUniqueName \{
+  \alt<-2>{auto}{\alert<3>{void}} operator()() \only<1>{\alert{const} }\{\}
+\};}\end{codeblock}
+    \end{column}
+  \end{columns}
+
+  \begin{itemize}
+  \item<4-> Variables captured by reference can be modified
+    \begin{itemize}
+    \item There is no way to capture by \texttt{const\&}
+    \end{itemize}
+  \end{itemize}
+
+  \begin{codeblock}<4->
+int v = 3;
+[\&v] \{ ++v; \}(); // note how the lamdba is immediately executed
+assert(v == 4);\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Lambda: dangling reference}
+
+  \begin{itemize}
+  \item Be careful not to have dangling references in a closure
+  \item It's similar to a function returning a reference to a local variable
+
+  \begin{codeblock}
+auto make\_lambda() // auto here is unavoidable
+\{
+  int v = 3;
+  return [\alert{&}] \{ return v; \}; // return a closure
+\}
+
+auto lam = make\_lambda();
+auto d = lam(); // the captured variable is dangling here\end{codeblock}
+
+  \item<2-> Capture by reference only if the lambda doesn't survive the current
+    scope
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{std::function}}
+
+  \begin{itemize}
+  \item Type-erased wrapper that can store and invoke any callable entity with a
+    certain signature
+    \begin{itemize}
+    \item function, function object, lambda, member function
+    \end{itemize}
+
+    \begin{codeblock}<2->{
+#include <functional>
+
+using Function = std::function<\alert{int(int,int)}>; // \alert{signature}
+
+Function f1 \{ std::plus<int>\{\} \};
+Function f2 \{ [](int a, int b) \{ return a * b; \} \};
+Function f3 \{ [](auto a, auto b) \{ return std::gcd(a,b); \} \};}\end{codeblock}
+
+  \item<3-> Some space and time overhead, so use only if a template parameter is
+    not satisfactory
+    \begin{codeblock}<4->{
+std::vector<Function> functions \{ f1, f2, f3 \};
+
+for (auto& f : functions) \{
+  std::cout << f(121, 42) << \bslashn; // 163 5082 1
+\}}\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
