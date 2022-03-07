@@ -5479,9 +5479,38 @@ Iterator \textbf{find}(Iterator first, Iterator last, const T\& value)
   return first;
 \}\end{codeblock}
 
-  \item A concept is a set of requirements that a type needs to satisfy
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Concepts}
+
+  \begin{itemize}
+  \item A \textit{concept} is a set of requirements that a type needs to satisfy
+    at compile time
     \begin{itemize}
     \item e.g. supported expressions, nested typedefs, memory layout, \ldots
+    \end{itemize}
+
+  \item<2-> Concepts constrain the types that can be used as template arguments
+    \begin{itemize}
+    \item Implicit until \Cpp{}20, based on how those types are used in a
+      class/function template definition
+
+    \item<3-> \Cpp{}20 introduces a specific syntax and a set of generally useful
+      concepts (not further discussed)
+      \begin{codeblock}
+template<class T>
+concept Incrementable = requires(T t) \{ ++t; \};
+
+template<Incrementable T>
+auto advance(T& t) \{ ++t; \}
+
+int i\{\};
+advance(i); // ok, int is a model of Incrementable
+
+struct S \{\};
+S s;
+advance(s); // error, S is not a model of Incrementable\end{codeblock}
     \end{itemize}
   \end{itemize}
 
@@ -5625,7 +5654,7 @@ auto it = std::find(\alert{std::execution::par}, v.begin(), v.end(), 123);
     \begin{itemize}
     \item Big-O notation
     \item $\mathcal{O}(g(n))$ means that, for a large $n$,
-      $f \le cg(n)$, for some constant $c$
+      $f(n) \le cg(n)$, for some constant $c$
     \item Note how constant factors don't matter in big-O notation
     \end{itemize}
   \item<3-> For example
@@ -5683,7 +5712,7 @@ auto it = find(v.begin(), v.end(), 42);}\end{codeblock}
 
   \begin{codeblock}<2->
 template <class Iterator, class Predicate>
-Iterator find_if(Iterator first, Iterator last, \alert{Predicate pred})
+Iterator find\alert{_if}(Iterator first, Iterator last, \alert{Predicate pred})
 \{
   for (; first != last; ++first)
     if (\alert{pred(*first)})         // unary predicate
