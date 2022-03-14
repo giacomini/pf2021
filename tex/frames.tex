@@ -6070,3 +6070,1026 @@ for (auto& f : functions) \{
   \end{itemize}
 
 \end{frame}
+
+\begin{frame}{Dynamic memory allocation}
+
+  \begin{itemize}
+  \item<1-> It's not always possible or convenient to construct objects on the
+    stack, where they would be destroyed at the end of the function that created
+    them
+  \item<2-> An object (array of objects) can be constructed on the free store
+    (\textit{heap})
+    \begin{itemize}
+    \item operator \code{new} (\code{new []})
+      \begin{itemize}
+      \item allocate memory
+      \item run the object(s) constructor
+      \end{itemize}
+    \end{itemize}
+  \item<3-> The lifetime of an object (array of objects) on the heap is managed
+    by the developer
+    \begin{itemize}
+    \item explicit destruction when not needed any more
+    \item operator \code{delete} (\code{delete []})
+      \begin{itemize}
+      \item run the object(s) \textit{destructor} (see later)
+      \item deallocate memory
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Dynamic allocation of an object}
+
+  \begin{columns}[t]
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}
+\visible<2->{auto fun()}
+\visible<2->{\{}
+\visible<3->{  int n \{1234\};}
+\visible<4->{  \visible<7->{int* p =} new int\visible<5->{\{5678\}};}
+\visible<8->{  \ddd}
+\visible<9->{  delete p;}
+\visible<2->{\}}\end{codeblock}
+
+      \begin{itemize}
+      \item<11-> \code{delete p} does \textbf{not} modify the value of \code{p}
+      \item<12-> After \code{delete p}, the only operation that can be done with
+        \code{p} is an assignment
+        \begin{itemize}
+        \item \code{p = \ddd;}
+        \end{itemize}
+      \item<13-> if \code{p} is \code{nullptr}, \code{delete p} is well defined
+        and does nothing
+      \end{itemize}
+
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        addr/.style={
+          minimum width=0.35cm,
+          minimum height=0.5cm,
+          draw=black,
+          densely dotted
+        },
+        anchor=south west]
+
+        \visible<1->{
+          \node[mem, minimum height=5cm, label={90:Stack}] (stack) {};
+
+          \node[mem, minimum height=5cm, label={90:Heap},right=1cm of stack]
+          (heap) {};
+        }
+
+        \visible<2->{
+          \node[frame,minimum height=1cm,below=0cm of
+          stack.north,anchor=north] (funcaller) {};
+        }
+
+        \visible<2-9>{
+          \node[frame,minimum height=2cm,below=0cm of
+          funcaller.south,anchor=north,label={[yshift=.9cm]0:\scriptsize\tt fun}]
+          (fun) {};
+        }
+
+        \visible<3-9>{
+          \node[var,above=.5cm of fun.south,anchor=south,label={180:\scriptsize\tt
+            n}] (n) {1234};
+        }
+
+        \visible<7-9>{
+          \node[var,above=0pt of n,label={180:\scriptsize\tt p}] (p) {0x4ab0};
+        }
+
+        \visible<4-8>{
+          \node[var,below=2cm of heap.north] (obj) {\only<5->{5678}};
+        }
+
+        \visible<6->{
+          \node[addr,left=0pt of obj.west,anchor=west,label={270:\tiny\tt 0x4ab0}]
+          (objaddr) {};
+        }
+
+        \visible<7->{
+          \draw[{Circle[length=2pt]}-Stealth] ([xshift=-10pt]p.east) --
+          (objaddr.west);
+        }
+      \end{tikzpicture}
+
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Returning a dynamically-allocated object from a function}
+
+  \begin{columns}[t]
+    \begin{column}{.45\textwidth}
+      \begin{codeblock}
+\visible<1->{Regression* create()}
+\visible<1->{\{}
+\visible<1->{  auto rc = \alert<3>{new Regression\{\}};}
+\visible<1->{  rc->add(\ddd);}
+\visible<1->{  \ddd}
+\visible<1->{  \alert<4>{return rc};}
+\visible<1->{\}}
+
+\visible<1->{auto use()}
+\visible<1->{\{}
+\visible<1->{  auto ru = \alert<2>{create()};}
+\visible<1->{  ru->fit();}
+\visible<1->{  \ddd}
+\visible<1->{  \alert<5>{delete ru};}
+\visible<1->{\}}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.55\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        addr/.style={
+          minimum width=0.35cm,
+          minimum height=0.5cm,
+          draw=black,
+          densely dotted
+        },
+        anchor=south west]
+
+        \visible<1->{
+          \node[mem, minimum height=5cm, label={90:Stack}] (stack) {};
+
+          \node[mem, minimum height=5cm, label={90:Heap},right=1.5cm of stack]
+          (heap) {};
+        }
+
+        \visible<1->{
+          \node[frame,minimum height=1cm,below=0cm of
+          stack.north,anchor=north] (caller) {};
+        }
+
+        \visible<1-5>{
+          \node[frame,minimum height=1.5cm,below=0cm of
+          caller.south,anchor=north,label={[yshift=.7cm]0:\scriptsize\tt use}]
+          (use) {};
+        }
+
+        \visible<2-3>{ \node[frame,minimum height=1.5cm,below=0cm of
+          use.south,anchor=north,label={[yshift=.7cm]0:\scriptsize\tt create}]
+          (create) {}; }
+
+        \visible<2-3>{
+          \node[var,anchor=center,label={180:\scriptsize\tt rc}] at (create)
+          (rc) {\only<3>{0xaacc}};
+        }
+
+        \visible<1-5>{ \node[var,anchor=center,label={180:\scriptsize\tt ru}] at
+          (use) (ru) {\only<4->{0xaacc}}; }
+
+        \visible<3-4>{
+          \node[var,minimum height=1.5cm,below=1.3cm of heap.north] (obj) {};
+        }
+
+        \visible<3->{
+          \node[addr,below left=0pt of obj,anchor=south west,label={270:\tiny\tt 0xaacc}]
+          (objaddr) {};
+        }
+
+        \visible<3>{
+          \draw[{Circle[length=2pt]}-Stealth] ([xshift=-10pt]rc.east) --
+          (objaddr.west);
+        }
+
+        \visible<4>{
+          \draw[{Circle[length=2pt]}-Stealth] ([xshift=-10pt]ru.east) --
+          (objaddr.west);
+        }
+      \end{tikzpicture}
+
+    \end{column}
+
+  \end{columns}
+
+  \vskip 1em
+
+  \uncover<6->{Note how the lifetime of a dynamically-allocated object is
+    explicitly managed by the developer}
+
+\end{frame}
+
+\begin{frame}[fragile]{(native) Array of objects}
+  Contiguous sequence of homogeneous objects in memory
+
+  \begin{tikzpicture}
+    [anchor=south west]
+    \visible<2->{\node at (0,0) [
+        rectangle,
+        draw=black!50,
+        minimum width=.9\textwidth,
+        minimum height=.5cm,
+      ] {};
+    }
+    \visible<2->{\node at (0,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt 0x0000}}
+      ] {};
+    }
+    \visible<2->{\node at (.9\textwidth-.35cm,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt 0xffff}}
+      ] {};
+    }
+
+    \visible<2->{\node at (3.5,0) [
+        rectangle,
+        fill=green!20!white,
+        draw=black!50,
+        minimum width=1.5cm,
+        minimum height=0.5cm,
+        label=270:{\scriptsize\tt\alt<4->{a\alert<4>{[}0\alert<4>{]}}{}},
+      ] {\scriptsize\tt\alt<-4>{123}{\alert<5>{124}}};
+    }
+    \visible<2->{\node at (5,0) [
+        rectangle,
+        fill=green!20!white,
+        draw=black!50,
+        minimum width=1.5cm,
+        minimum height=0.5cm,
+        label=270:{\scriptsize\tt\alt<4->{a\alert<4>{[}1\alert<4>{]}}{}},
+      ] {\scriptsize\tt\alt<-9>{456}{\alert<10>{654}}};
+    }
+    \visible<2->{\node at (6.5,0) [
+        rectangle,
+        fill=green!20!white,
+        draw=black!50,
+        minimum width=1.5cm,
+        minimum height=0.5cm,
+        label=270:{\scriptsize\tt\alt<4->{a\alert<4>{[}2\alert<4>{]}}{}},
+      ] {\scriptsize\tt 789};
+    }
+
+    \visible<2->{\node (addr a0) at (3.5,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt\alert<7-8>{0xab00}}}
+      ] {};
+    }
+    \visible<2->{\node (addr a1) at (5,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt\alert<9-10>{0xab04}}}
+      ] {};
+    }
+    \visible<2->{\node (addr a2) at (6.5,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt 0xab08}}
+      ] {};
+    }
+    \visible<2->{\node (addr a3) at (8,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt\alert<11->{0xab0c}}}
+      ] {};
+    }
+
+    \visible<7->{\node (b) at (1.2,0) [
+        rectangle,
+        fill=green!20!white,
+        draw=black!50,
+        minimum width=1.5cm,
+        minimum height=0.5cm,
+        label=270:{\scriptsize\tt b},
+      ] {\scriptsize\tt\alert{\alt<-8>{0xab00}{\alt<-10>{0xab04}{0xab0c}}}};
+    }
+    \visible<7->{\node at (1.2,0) [
+        rectangle,
+        minimum width=0.35cm,
+        minimum height=0.5cm,
+        draw=black,
+        densely dotted,
+        label={90:{\scriptsize\tt 0xaa00}}
+      ] {};
+    }
+
+    \draw<7-8>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]b.center) .. controls +(1.5,.5) .. (addr a0.north);
+    \draw<9-10>[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]b.center) .. controls +(3,.5) .. (addr a1.north);
+    \draw<11->[{Circle[length=2pt]}-Stealth,opacity=.6] ([yshift=.1cm]b.center) .. controls +(6,.5) .. (addr a3.north);
+
+  \end{tikzpicture}
+
+  \begin{codeblock}<3->{
+\uncover<3->{int a[3] = \{123, 456, 789\}; // int[3], the size must be a constant
+                            // and can be deduced from the initializer}
+\uncover<5->{++a\alert<5>{[}0\alert<5>{]};}
+\uncover<6->{a[3];                       // undefined behavior}
+\uncover<7->{// "arrays decay to pointers at the slightest provocation"
+auto b = a;                 // int*, size information lost}
+\uncover<8->{assert(b == &a[0]);}
+\uncover<9->{++b;                        // increase by sizeof(int)
+assert(b == &a[1]);}
+\uncover<10->{*b = 654;}
+\uncover<11->{b += 2;                     // increase by 2 * sizeof(int)}
+\uncover<12->{*b;                         // undefined behavior}
+\uncover<13->{if (b == a + 3) \{ ... \}     // ok, but not more than this}}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Dynamic allocation of an array of objects}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{codeblock}
+\visible<2->{auto fun()}
+\visible<2->{\{}
+\visible<3->{  int a[3] \{12, 34, 56\};}
+\visible<4->{  \visible<7->{\alt<-7>{auto}{\alert<8>{int*}} p =} new int[3] \visible<5->{\{12, 34, 56\}};}
+\visible<9->{  \ddd}
+\visible<10->{  delete [] p;}
+\visible<2->{\}}\end{codeblock}
+
+      \begin{itemize}
+      \item<12-> \code{p} does \textbf{not} carry ``array'' information
+      \item<13-> \code{delete [] p} does \textbf{not} modify the value of \code{p}
+      \item<13-> After \code{delete [] p}, the only operation that can be done
+        with \code{p} is an assignment
+      \item<13-> If \code{p} is \code{nullptr}, \code{delete [] p} is well
+        defined and does nothing
+      \end{itemize}
+
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+
+      \begin{tikzpicture}[
+        mem/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black
+        },
+        frame/.style={
+          minimum width=2cm,
+          inner sep=0pt,
+          outer sep=0pt,
+          draw=black,
+          thick,
+          fill=green!50!white
+        },
+        var/.style={
+          node font=\ttfamily\scriptsize,
+          minimum height=.5cm,
+          minimum width=2cm,
+          draw=black,
+          fill=green!30!white,
+          inner sep=0pt,
+          outer sep=0pt
+        },
+        addr/.style={
+          minimum width=0.35cm,
+          minimum height=0.5cm,
+          draw=black,
+          densely dotted
+        },
+        anchor=south west]
+
+        \visible<1->{
+          \node[mem, minimum height=7cm, label={90:Stack}] (stack) {};
+
+          \node[mem, minimum height=7cm, label={90:Heap},right=1cm of stack]
+          (heap) {};
+        }
+
+        \visible<2->{
+          \node[frame,minimum height=3cm,below=0cm of
+          stack.north,anchor=north] (funcaller) {};
+        }
+
+        \visible<2-10>{
+          \node[frame,minimum height=3cm,below=0cm of
+          funcaller.south,anchor=north,label={[yshift=1.2cm]0:\scriptsize\tt fun}]
+          (fun) {};
+        }
+
+        \visible<3-10>{
+          \node[var,above=.5cm of fun.south,anchor=south,label={180:\scriptsize\tt
+            a[0]}] (a0) {12};
+          \node[var,above=0pt of a0,anchor=south,label={180:\scriptsize\tt
+            a[1]}] (a1) {34};
+          \node[var,above=0pt of a1,anchor=south,label={180:\scriptsize\tt
+            a[2]}] (a2) {56};
+        }
+
+        \visible<7-10>{
+          \node[var,above=0pt of a2,label={180:\scriptsize\tt p}] (p) {0xed80};
+        }
+
+        \visible<4-9>{
+          \node[var,below=2cm of heap.north,label={180:\only<9->{\scriptsize\tt p[0]}}]
+          (p0) {\only<5->{12}};
+          \node[var,above=0pt of p0,label={180:\only<9->{\scriptsize\tt p[1]}}] (p1)
+          {\only<5->{34}};
+          \node[var,above=0pt of p1,label={180:\only<9->{\scriptsize\tt p[2]}}] (p2)
+          {\only<5->{56}};
+        }
+
+        \visible<6->{
+          \node[addr,left=0pt of p0.west,anchor=west,label={270:\tiny\tt 0xed80}]
+          (p0addr) {};
+        }
+
+        \visible<7->{
+          \draw[{Circle[length=2pt]}-Stealth] ([xshift=-10pt]p.east) --
+          (p0addr.west);
+        }
+      \end{tikzpicture}
+
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Dynamic allocation of an array of objects of dynamic size}
+
+  Arrays allocated on the heap are most useful when their size is available only
+  at runtime
+
+  \begin{columns}[t]
+    \begin{column}{.4\textwidth}
+      \begin{codeblock}<2->{
+auto fun()
+\{
+  int n;
+  std::cin >> n;
+  auto p = new int[n];
+  \ddd
+  delete [] p;
+\}}\end{codeblock}
+
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+
+      \visible<3->{
+        \begin{tikzpicture}[
+          mem/.style={
+            minimum width=2cm,
+            inner sep=0pt,
+            outer sep=0pt,
+            draw=black
+          },
+          frame/.style={
+            minimum width=2cm,
+            inner sep=0pt,
+            outer sep=0pt,
+            draw=black,
+            thick,
+            fill=green!50!white
+          },
+          var/.style={
+            node font=\ttfamily\scriptsize,
+            minimum height=.5cm,
+            minimum width=2cm,
+            draw=black,
+            fill=green!30!white,
+            inner sep=0pt,
+            outer sep=0pt
+          },
+          addr/.style={
+            minimum width=0.35cm,
+            minimum height=0.5cm,
+            draw=black,
+            densely dotted
+          },
+          anchor=south west]
+
+          \node[mem, minimum height=5cm, label={90:Stack}] (stack) {};
+
+          \node[mem, minimum height=5cm, label={90:Heap},right=2cm of stack]
+          (heap) {};
+
+          \node[frame,minimum height=1cm,below=0cm of stack.north,anchor=north]
+          (funcaller) {};
+
+          \node[frame,minimum height=2cm,below=0cm of
+          funcaller.south,anchor=north,label={[yshift=.5cm]0:\scriptsize\tt fun}]
+          (fun) {};
+
+          \node[var,above=.5cm of fun.south,anchor=south,label={180:\scriptsize\tt
+            n}] (n) {\ddd};
+
+          \node[var,above=.0pt of n.north,anchor=south,label={180:\scriptsize\tt
+            p}] (p) {0xc408};
+
+          \node[var,below=3cm of heap.north,label={180:\scriptsize\tt p[0]}] (p0)
+          {};
+
+          \node[var,above=0pt of p0,label={180:\scriptsize\tt p[1]}] (p1) {};
+
+          \node[var,minimum height=1.5cm,above=0pt of p1,label={180:$\vdots$}]
+          (pi) {$\vdots$};
+
+          \node[var,above=0pt of pi,label={180:\scriptsize\tt p[n-1]}]
+          (pnminus1) {};
+
+          \node[addr,left=0pt of p0.west,anchor=west,label={270:\tiny\tt 0xc408}]
+          (p0addr) {};
+
+          \draw[{Circle[length=2pt]}-Stealth] ([xshift=-10pt]p.east) --
+          (p0addr.west);
+        \end{tikzpicture}
+      }
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}{Null-terminated byte strings}
+  \begin{itemize}
+  \item<1-> A null-terminated byte string (NTBS) is an array of non-null characters
+    followed by the null character (\code{char\{0\}} or \code{\bslashz})
+    \begin{itemize}
+    \item \code{char[]} (\code{char*}) if characters are modifiable
+    \item \code{char const[]} (\code{char const*}) if characters are not
+      modifiable
+    \item Also known as ``C-strings''
+    \end{itemize}
+  \item<2-> The \code{std::strlen} function returns the length of an NTBS
+    \begin{itemize}
+    \item Linear complexity, scan the array until \code{\bslashz} is found
+    \end{itemize}
+  \item<3-> A string literal has type \code{char const[N]}, with \code{N} constant
+    \begin{itemize}
+    \item For example, the type of \code{"ciao"} is \code{char const[5]}
+    \end{itemize}
+  \item<4-> An \code{std::string} can be initialized with an NTBS
+  \item<4-> To get the NTBS representation of an \code{std::string} use the
+    \code{c_str} method
+    \begin{itemize}
+    \item It returns a \code{char const*} to the internal array
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{The \code{main} function}
+  \begin{itemize}
+  \item The \code{main} (special) function is the entry point of a program
+  \item It can have two forms
+    \begin{itemize}
+    \item \code{int main() \{\ddd\}}
+    \item \code{int main(int argc, char* argv[]) \{\ddd\}}
+    \end{itemize}
+  \item If there is no \code{return} statement, an implicit \code{return 0;} is assumed
+    \begin{itemize}
+    \item $0$ means success, different from $0$ means failure
+    \end{itemize}
+  \item \code{argc} is the number of arguments on the command line, \code{argv}
+    is an array of C-strings representing the arguments
+    \begin{itemize}
+    \item \code{argv[0]} is (usually) the name of the program
+    \item \code{argv[argc]} is \code{nullptr}
+    \end{itemize}
+  \item Many libraries exist to parse the command line, e.g.
+    \href{https://github.com/bfgroup/Lyra}{Lyra},
+    \href{https://github.com/jarro2783/cxxopts}{cxxopts},
+    \href{https://www.boost.org/doc/libs/release/libs/program_options/}{Boost.Program_options}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Managing raw arrays}
+
+  \begin{itemize}
+  \item Managing raw arrays \textbf{correctly} is difficult
+  \item Passing an array around makes it decay to a pointer to its first
+    element, loosing important type information
+  \item How do you pass an array to a function?
+    \begin{itemize}
+    \item Need to pass pointer and size
+    \item \Cpp{}20 introduces \code{std::span}
+    \end{itemize}
+  \item How do you return an array from a function?
+  \item Better use higher-level tools, such as \code{std::string},
+    \code{std::array} and \code{std::vector}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Weaknesses of a \code{T*}}
+
+  \begin{itemize}
+  \item<1-> Critical information is not encoded in the type
+    \begin{itemize}
+    \item<2-> Am I the owner of the pointee? Should I delete it?
+      \begin{codeblock}<2->{
+Shape* s = create_shape();               // (probably) delete
+
+\visible<3->{std::string str\{"hello"\};
+char const* cs = str.c_str();            // don\textquotesingle{}t delete
+char      * cd = str.data();             // don\textquotesingle{}t delete, const is irrelevant}}\end{codeblock}
+
+    \item<4-> Is the pointee an object or an array of objects? of what size?
+      \begin{codeblock}<4->{
+Shape* s = create_shape\textbf{s}();               // (probably) delete \textbf{[]}}\end{codeblock}
+
+    \item<5-> Was it allocated with \code{new}, \code{malloc} or even something
+      else?
+      \begin{itemize}
+      \item \code{malloc} is a C function that allocates raw memory, which is
+        then de-allocated passing the pointer to the function \code{free}
+      \item e.g. the \code{fopen} function returns a \code{FILE*}?
+      \end{itemize}
+
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Weaknesses of a \code{T*} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item Owning pointers are prone to leaks
+    \begin{codeblock}
+\{
+  auto p = new Circle\{\ddd\};
+  \ddd
+  // ops, forgot to delete p
+\}\end{codeblock}
+
+  \item<2-> Owning pointers are prone to double \code{delete}s
+    \begin{codeblock}
+\{
+  auto p = new Circle\{\ddd\};
+  \ddd
+  delete p;
+  \ddd
+  delete p; // ops, delete again
+\}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Weaknesses of a \code{T*} \insertcontinuationtext}
+
+  \begin{itemize}
+  \item<1-> Owning pointers are unsafe in presence of exceptions
+    \begin{codeblock}
+\{
+  auto p = new Circle\{\ddd\};
+  \ddd                         // potentially throwing code
+  delete p;                  // leak if exception thrown
+\}\end{codeblock}
+
+  \item<2-> Runtime overhead, in space and time
+    \begin{itemize}
+    \item dynamic allocation/deallocation
+    \item indirection
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Stack vs Heap: space}
+
+  \begin{columns}[T]
+    \begin{column}{.3\textwidth}
+
+  \begin{codeblock}{
+struct S \{
+  int    n;
+  float  f;
+  double d;
+\};
+
+\uncover<2->{auto foo_s() \{
+  S s;
+  \ddd
+\}}
+
+\uncover<4->{auto foo_h() \{
+  S* s = new S;
+  \ddd
+\}}}\end{codeblock}
+    \end{column}
+
+    \setlength{\bytesize}{0.2cm}
+    \setlength{\memwidth}{8\bytesize}
+    \setlength{\memheight}{5cm}
+
+    \begin{column}{.3\textwidth}
+      \uncover<2->{\begin{tikzpicture}
+        [anchor=south west]
+        \node (memory) at (0,0) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\memheight,
+          draw=black
+        ] {};
+        \node at (0,3) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=5\bytesize,
+          draw=black,
+          fill=green!30!white,
+          label={[yshift=-.4cm]\scriptsize\tt foo\_s}
+        ] {};
+        \node at (0,4) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=1cm,
+          draw=black,
+          fill=green!10!white
+        ] {};
+        \node at (0,3.1) [
+          rectangle,
+          minimum width=.5\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=red
+        ] {};
+        \node at (.5\memwidth,3.1) [
+          rectangle,
+          minimum width=.5\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=blue
+        ] {};
+        \node at (0,3.1cm + \bytesize) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=yellow
+        ] {};
+        \node at (0,0) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={270:{\tiny\tt 0x00..00}}
+        ] {};
+        \node at (\memwidth-\bytesize,\memheight-\bytesize) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={90:{\tiny\tt 0xff..ff}}
+        ] {};
+        \draw [dashed] (-.5cm,.5\memheight) -- (\memwidth + .5cm,.5\memheight);
+        \node at (0,4) [rotate=90] {\scriptsize\textit{stack}};
+        \node at (0,0) [rotate=90] {\scriptsize\textit{heap}};
+      \end{tikzpicture}}
+
+      \uncover<3->{\scriptsize Occupancy:
+      \begin{itemize}
+      \item \code{sizeof(S)}
+      \end{itemize}}
+
+    \end{column}
+
+    \begin{column}{.3\textwidth}
+
+      \uncover<4->{\begin{tikzpicture}
+        [anchor=south west]
+        \node (memory) at (0,0) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\memheight,
+          draw=black
+        ] {};
+        \node at (0,3) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=5\bytesize,
+          draw=black,
+          fill=green!30!white,
+          label={[yshift=-.4cm]\scriptsize\tt foo\_h}
+        ] {};
+        \node at (0,4) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=1cm,
+          draw=black,
+          fill=green!10!white
+        ] {};
+        \node (ptr) at (0,3.1cm) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=green
+        ] {};
+        \node (alloc) at (0,1.1) [
+          rectangle,
+          minimum width=.5\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=red
+        ] {};
+        \node at (.5\memwidth,1.1) [
+          rectangle,
+          minimum width=.5\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=blue
+        ] {};
+        \node at (0,1.1cm + \bytesize) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\bytesize,
+          draw=black,
+          fill=yellow
+        ] {};
+        \draw[{Circle[length=2pt]}-Stealth,opacity=.6] (ptr.center) .. controls +(-1.5,-1) .. (alloc.base west);
+        \node at (0,0) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={270:{\tiny\tt 0x00..00}}
+        ] {};
+        \node at (\memwidth-\bytesize,\memheight-\bytesize) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={90:{\tiny\tt 0xff..ff}}
+        ] {};
+        \draw [dashed] (-.5cm,.5\memheight) -- (\memwidth + .5cm,.5\memheight);
+        \node at (0,4) [rotate=90] {\scriptsize\textit{stack}};
+        \node at (0,0) [rotate=90] {\scriptsize\textit{heap}};
+      \end{tikzpicture}}
+
+      \uncover<5->{\scriptsize Occupancy:
+      \begin{itemize}
+      \item \code{sizeof(S)} + \code{sizeof(S*)}
+      \item plus \code{new} internal space overhead
+      \end{itemize}}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Stack vs Heap: time}
+  \begin{columns}[T]
+    \begin{column}{.4\textwidth}
+      Stack
+      \begin{codeblock}{\tiny
+void stack()
+\{
+  int m\{123\};
+  \ddd
+\}}\end{codeblock}
+      \begin{codeblock}<2->{\tiny
+stack():
+     subq %4, %rsp
+     movl $123, (%rsp)
+     \ddd
+     addq $4, %rsp
+     ret}\end{codeblock}
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      Heap
+      \begin{codeblock}{\tiny
+void heap()
+\{
+  int* m = new int\{123\};
+  \ddd
+  delete m;
+\}}\end{codeblock}
+      \begin{codeblock}<3->{\tiny
+heap():
+     subq	$8, %rsp
+     movl	$4, %edi
+     \alert{call	operator new(unsigned long)}
+     movl	$123, (%rax)
+     movq %rax, (%rsp)
+     \ddd
+     movl	$4, %esi
+     movq	%rax, %rdi
+     \alert{call	operator delete(void*, unsigned long)}
+     addq	$8, %rsp
+     ret}\end{codeblock}
+      \begin{codeblock}<4->{\tiny
+$ g++ -O3 heap.cpp && ./a.out
+1000000 iterations: 0.035745 s}\end{codeblock}
+
+\uncover<4->{\scriptsize i.e. \~35 ns for each \code{new}/\code{delete} (on my
+  laptop)}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Investigating memory problems}
+
+  \begin{itemize}
+  \item One of the simplest tools to use is the \textit{Address Sanitizer}
+    (ASan)
+  \item The compiler instruments the executable so that at runtime ASan can
+    catch many (but not all!) memory problems
+  \item Some space and time overhead at runtime, but acceptable at least during
+    testing
+  \end{itemize}
+
+    \begin{shellblock}<2->{
+$ g++ -fsanitize=address leak.cpp
+$ ./a.out
+
+=================================================================
+==18338==ERROR: LeakSanitizer: detected memory leaks
+\ldots}\end{shellblock}
+
+\end{frame}
+
+\begin{frame}{Guidelines on dynamic objects}
+
+  \begin{itemize}
+  \item Possibly don't, i.e. use the stack
+  \item If unavoidable, use a resource-managing object, e.g.
+    \begin{itemize}
+    \item containers and strings
+    \item \textit{smart pointers} (see later)
+    \end{itemize}
+  \item Ideally the residual meaning of a raw pointer (\code{T*}) should be
+    ``I'm pointing to \textbf{one} element and I'm \textbf{not} its owner''
+  \end{itemize}
+\end{frame}
