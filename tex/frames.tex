@@ -7093,3 +7093,569 @@ $ ./a.out
     ``I'm pointing to \textbf{one} element and I'm \textbf{not} its owner''
   \end{itemize}
 \end{frame}
+
+\begin{frame}{Resource management}
+  \begin{itemize}
+  \item<1-> Dynamic memory is just one of the many types of resources manipulated by a
+    program:
+    \begin{itemize}
+    \item thread, mutex, socket, file, \ldots
+    \end{itemize}
+  \item<2-> C++ offers powerful tools to manage resources
+    \begin{itemize}
+    \item \textit{"C++ is my favorite garbage collected language because it
+      generates so little garbage"}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Destruction}
+
+  \begin{itemize}
+  \item<1-> At the end of a block statement (i.e. when the closing brace
+    \alert{\}} is encountered) all objects of automatic storage duration are
+    automatically \textit{destroyed}
+  \item<2-> Destroying an object means
+    \begin{itemize}
+    \item for a class type, a special member function, called
+      \textit{destructor}, if present, is run
+    \item all the sub-objects (e.g. data members) are destroyed, recursively
+    \item the storage is freed
+    \end{itemize}
+  \item<3-> The order of destruction is the opposite of the order of
+    construction/definition
+    \begin{itemize}
+    \item a later-defined object can use a previously-defined one
+    \end{itemize}
+  \end{itemize}
+
+  \begin{codeblock}<3->{
+\{
+  S s\{\ddd\};
+  \ddd
+  T t\{s\};
+  \ddd
+\} // t is destroyed first, then s}\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{The destructor}
+
+  \begin{itemize}[<+->]
+  \item The \textit{destructor} is a special class member function that is
+    called when an object of that class goes out of scope and is to be destroyed
+  \item The purpose of the destructor is to leave no garbage behind
+  \item Only one destructor with the signature \code{\~\textit{classname}()}
+  \end{itemize}
+
+  \begin{codeblock}<+->
+class DynamicArray \{
+  \ddd
+  int* m_data;
+ public:
+  DynamicArray(int n): m_data\{new int[n]\} \ddd
+  ~DynamicArray()
+  \{
+    delete [] m_data;
+  \}
+\};\end{codeblock}
+
+\end{frame}
+
+\begin{frame}{RAII idiom}
+
+  \begin{itemize}[<+->]
+  \item Resource Acquisition Is Initialization
+    \begin{itemize}
+    \item The constructor accepts/acquires a resource
+    \item The destructor releases it
+    \end{itemize}
+  \item The object is responsible for the correct lifetime management of that
+    resource
+  \item Guaranteed no leak nor double release, even in presence of exceptions
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Controlling copying}
+  \begin{itemize}
+  \item<1-> The compiler automatically generates the copy operations for a class, if used
+    \begin{itemize}
+    \item The copy constructor creates a \alert{new} object as a copy of
+      another object
+
+      \begin{codeblock}
+DynamicArray original\{\ddd\};
+auto copy\{original\}; // auto copy = original\end{codeblock}
+
+    \item The copy assignment operator changes the value of an \alert{existing}
+      object as a copy of another object
+
+      \begin{codeblock}
+DynamicArray v1\{\ddd\};
+DynamicArray v2\{\ddd\};
+v2 = v1;\end{codeblock}
+
+    \end{itemize}
+
+  \item<2-> Ideally, after a copy the two objects should compare equal
+  \item<3-> The generated operations may not be correct, especially in presence of
+    managed resources (e.g. dynamically-allocated memory)
+  \item<3-> The copy operations can be explicitly provided or suppressed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Controlling copying \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The copy constructor typically takes an object of the same class by
+    const reference
+    \begin{codeblock}
+DynamicArray(DynamicArray const& other) : \ddd \{\ddd\}\end{codeblock}
+
+  \item The copy assignment operator typically:
+    \begin{itemize}
+    \item takes an object of the same class by const reference
+    \item returns the object itself by reference
+    \item checks for auto-assignment
+    \end{itemize}
+
+    \begin{codeblock}
+DynamicArray& operator=(DynamicArray const& other)
+\{
+  if (this != &other) \{
+    \ddd
+  \}
+  return *this;
+\}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Controlling copying \insertcontinuationtext}
+    \begin{codeblock}
+class DynamicArray
+\{
+  int m_size = 0; int* m_data = nullptr;
+ public:
+  DynamicArray(int n, int v = int\{\}) : m_size\{n\}, m_data\{new int[m_size]\}
+  \{ std::fill(m_data, m_data + m_size, v); \}
+  ~DynamicArray() \{ delete[] m_data; \}
+  \alert{DynamicArray(DynamicArray const& other)}
+      : m_size\{other.m_size\}, m_data\{new int[m_size]\}
+  \{ std::copy(other.m_data, other.m_data + m_size, m_data); \}
+  \alert{DynamicArray& operator=(DynamicArray const& other)}
+  \{
+    if (this != &other) \{
+      delete[] m_data;
+      m_size = other.m_size;
+      m_data = new int[m_size];
+      std::copy(other.m_data, other.m_data + m_size, m_data);
+    \}
+    return *this;
+  \}
+  \ddd
+\};\end{codeblock}
+
+\end{frame}
+
+\begin{frame}{Smart pointers}
+  \begin{itemize}
+  \item A \textit{smart pointer} is an object that behaves like a pointer, but
+    also manages the lifetime of the pointed-to object (i.e. the pointee)
+  \item It leverages the RAII idiom
+    \begin{itemize}
+    \item Resource Acquisition Is Initialization
+    \item Resource (e.g. memory) is acquired in the constructor
+    \item Resource (e.g. memory) is released in the destructor
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Smart pointers \insertcontinuationtext}
+  \begin{codeblock}
+template<typename Pointee>
+class SmartPointer \{
+  Pointee* m_p;
+ public:
+  explicit SmartPointer(Pointee* p): m_p\{p\} \{\}
+  \alert<2>{~SmartPointer() \{ delete m_p; \}}
+  \visible<4->{Pointee* operator\alert<4>{->}() \{ return m_p; \}
+  Pointee& operator\alert<4>{*}() \{ return *m_p; \}}
+\};
+
+class Regression \{ \ddd \};
+
+\{
+  SmartPointer<Regression> \alert<2>{sp}\{new Regression\{\}\};
+  \visible<3->{sp\alert<3-4>{->}add(\ddd);
+  (\alert<3-4>{*}sp).fit();}
+\alert<2>{\}}\end{codeblock}
+
+\uncover<2->{At the end of the scope (i.e. at the closing \code{\}}) \code{sp}
+  is destroyed and its destructor \code{delete}s the pointee}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::unique_ptr<T>}}
+
+  Standard smart pointer
+
+  \begin{itemize}
+  \item Exclusive ownership
+  \item Minimal overhead, if any
+  \item Non-copyable, movable
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+class Regression \{ \ddd \};
+
+void take(std::unique_ptr<Regression> q); \uncover<6->{       \alert<6>{// by value}}
+
+\uncover<3->{std::unique_ptr<Regression> p\{new Regression\{\}\}; // explicit new}
+\uncover<4->{auto p = std::make_unique<Regression>();         // better (*)}
+\uncover<5->{auto r = p;}                                      \uncover<6->{// error, non-copyable}
+\uncover<5->{take(p);}                                         \uncover<6->{// error, non-copyable}
+\uncover<7->{auto r = \alert<7>{std::move(}p\alert<7>{)};}                           \uncover<8->{// ok, movable}
+\uncover<7->{take(\alert<7>{std::move(}r\alert<7>{)});}                              \uncover<8->{// ok, movable}}\end{codeblock}
+
+  \uncover<4->{(*) The possible arguments passed to \code{make_unique} are
+    \textit{forwarded} to the constructor}
+\end{frame}
+
+\begin{frame}[fragile]{Disabling copy operations}
+  \begin{itemize}
+  \item<1-> If a class cannot support copy semantics, its copy operations should be
+    suppressed
+  \item<2-> The cleanest way to do it is to mark the copy operations as
+    \code{=~delete}
+    \begin{codeblock}<3->
+template<typename Pointee>
+class UniquePtr \{
+  Pointee* m_p;
+ public:
+  explicit UniquePtr(Pointee* p): m_p\{p\} \{\}
+  ~UniquePtr() \{ delete m_p; \}
+  UniquePtr(UniquePtr const&) \alert{= delete};
+  UniquePtr& operator=(UniquePtr const&) \alert{= delete};
+  Pointee* operator->() \{ return m_p; \}
+  Pointee& operator*() \{ return *m_p; \}
+\};\end{codeblock}
+
+  \item<4-> Note that a deleted copy ctor is still a ctor and would disable the
+  generation of the default ctor
+  \item<5-> \code{=~delete} is a general mechanism that can be applied to any
+    function
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Move semantics}
+
+  \begin{itemize}
+  \item It allows to properly \textit{move} (i.e. pass) the responsibility of a
+    resource from one managing object to another
+  \item Mainly driven by optimization considerations but also a solution to
+    a proper management of resources
+  \item Introduced in the language by C++11, thanks to a new type of reference,
+    called \textit{rvalue reference}
+  \item An \textit{rvalue reference} is identified by the token \code{\&\&}, e.g.
+    \code{int\&\&}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Controlling moving}
+  \begin{itemize}
+  \item<1-> The compiler automatically generates the move operations for a class, if
+    used
+    \begin{itemize}
+    \item The move constructor creates a \alert{new} object, \alert{re-using} the
+      resources owned by another object
+
+      \begin{codeblock}
+UniquePtr<int> p\{new int\{42\}\};
+auto q\{std::move(p)\}; // auto q = std::move(p)\end{codeblock}
+
+     \item The move assignment operator changes the value of an \alert{existing}
+       object, \alert{re-using} the resources owned by another object
+
+      \begin{codeblock}
+UniquePtr<int> p\{new int\{12\}\};
+UniquePtr<int> q\{new int\{34\}\};
+q = std::move(p);\end{codeblock}
+
+     \end{itemize}
+   \item<2-> \code{std::move} enables the use of a move operation instead of the
+     corresponding copy operation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Controlling moving \insertcontinuationtext}
+
+  \begin{itemize}
+  \item<1-> If there are no resources involved, a move operation in fact becomes
+    a copy operation
+  \item<2-> Move operations typically modify the source object, to steal its
+    internal resources
+  \item<2-> After a move the two objects are typically different
+  \item<3-> A move should leave the original object in a \textit{``valid but
+      unspecified state''}
+    \begin{itemize}
+    \item i.e. \textbf{the class invariant is preserved}
+    \item not always easy, especially for the move constructor
+    \end{itemize}
+  \item<4-> Move operations should be \code{noexcept}, which means ``never
+    fail'' (more or less)
+  \item<5-> The automatically generated operations may not be correct
+  \item<5-> The move operations can be explicitly provided or suppressed
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Controlling moving \insertcontinuationtext}
+  \begin{codeblock}
+template <typename Pointee> class UniquePtr
+\{
+  Pointee* m_p;
+ public:
+  explicit UniquePtr(Pointee* p = nullptr) : m_p{p} \{\}
+  ~UniquePtr() \{ delete m_p; \}
+  UniquePtr(UniquePtr const&) = delete;
+  UniquePtr& operator=(UniquePtr const&) = delete;
+  \alert{UniquePtr(UniquePtr&& other)} noexcept
+      : m_p\{std::exchange(other.m_p, nullptr)\}
+  \{
+  \}
+  \alert{UniquePtr& operator=(UniquePtr&& other)} noexcept
+  \{
+    delete m_p;
+    m_p = std::exchange(other.m_p, nullptr);
+    return *this;
+  \}
+  \ddd
+\};\end{codeblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Controlling moving \insertcontinuationtext}
+
+  \begin{itemize}
+  \item The move constructor typically takes an object of the same class by
+    (non-const!) rvalue reference
+    \begin{codeblock}
+UniquePtr(UniquePtrs&& other) : \ddd \{\ddd\}\end{codeblock}
+
+  \item The move assignment operator typically:
+    \begin{itemize}
+    \item takes an object of the same class by (non-const) rvalue reference
+    \item returns the object itself by reference
+    \item does \textbf{not} check for auto-assignment
+    \end{itemize}
+
+    \begin{codeblock}
+UniquePtr& operator=(UniquePtr&& other)
+\{
+  \ddd
+  return *this;
+\}\end{codeblock}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Special member functions}
+  \begin{itemize}
+  \item A class has five special member functions
+    \begin{itemize}
+    \item Plus the default constructor
+    \end{itemize}
+
+    \begin{codeblock}
+class MyClass \{
+  MyClass(MyClass const&);            // copy constructor
+  MyClass& operator=(MyClass const&); // copy assignment
+  MyClass(MyClass&&);                 // move constructor
+  MyClass& operator=(MyClass&&);      // move assignment
+  ~MyClass();                         // destructor
+\};\end{codeblock}
+
+  \item<2-> The compiler can generate them automatically according to some
+    convoluted rules
+    \begin{itemize}
+    \item The behavior depends on the behavior of data members
+    \end{itemize}
+  \item<3-> General guidelines:
+    \begin{description}
+    \item [Rule of zero] Don't declare them and rely on the compiler
+    \item [Rule of five] If you need to declare one, declare them all
+    \end{description}
+    \begin{itemize}
+    \item Consider using \code{=default} and \code{=delete}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{\code{std::shared_ptr<T>}}
+
+  Standard smart pointer
+
+  \begin{itemize}
+  \item Shared ownership (reference counted)
+  \item Some space and time overhead
+    \begin{itemize}
+    \item for the management, not for access
+    \end{itemize}
+  \item Copyable and movable
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+class Regression \{ \ddd \};
+
+void take(std::shared_ptr<Regression> q);        // by value
+
+\uncover<3->{std::shared_ptr<Regression> p\{new Regression\{\}\}; // explicit new}
+\uncover<4->{auto p = std::make_shared<Regression>();         // better (*)}
+\uncover<5->{auto s = p;}                                      \uncover<6->{// ok, copyable}
+\uncover<5->{take(p);}                                         \uncover<6->{// ok, copyable}
+\uncover<7->{auto s = std::move(p);}                           \uncover<8->{// ok, movable}
+\uncover<7->{take(std::move(s));}                              \uncover<8->{// ok, movable}}\end{codeblock}
+
+  \uncover<4->{(*) The possible arguments passed to \code{make_shared} are
+    \textit{forwarded} to the constructor}
+
+\end{frame}
+
+\begin{frame}[fragile]{Using smart pointers}
+
+    \begin{itemize}[<+->]
+
+    \item Give an owning raw pointer (e.g. the result of a call to \code{new})
+      to a smart pointer as soon as possible
+    \item Prefer \code{unique_ptr} unless you need \code{shared_ptr}
+      \begin{itemize}[<.->]
+      \item You can always move a \code{unique_ptr} into a \code{shared_ptr}
+      \item But not viceversa
+      \end{itemize}
+
+    \item Access to the raw pointer is available
+      \begin{itemize}[<.->]
+      \item e.g. to pass to legacy APIs
+      \item \code{\textit{smart}_ptr<T>::get()}
+        \begin{itemize}
+        \item returns a \textbf{non-owning} \code{T*}
+        \end{itemize}
+      \item \code{unique_ptr<T>::release()}
+        \begin{itemize}
+        \item returns an \textbf{owning} \code{T*}
+        \item must be explicitly managed
+        \end{itemize}
+      \end{itemize}
+
+    \item Arrays are supported
+
+      \begin{codeblock}<.->
+std::unique_ptr<int[]> p\{new int[n]\}; // destructor calls \upquote{delete []}\end{codeblock}
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Smart pointers and functions}
+
+  Pass a smart pointer to a function only if the function needs to rely on the
+  smart pointer itself
+
+  \begin{itemize}
+
+  \item<2-> by value of a \code{unique_ptr}, to transfer ownership
+    \begin{codeblock}
+void take(std::unique_ptr<Regression> q);
+auto p = std::make_unique<Regression>();
+take(p);            // error
+take(std::move(p)); // ok\end{codeblock}
+
+\item<3-> by value of a \code{shared_ptr}, to keep the resource alive
+  \begin{codeblock}
+auto s = std::make_shared<Regression>();
+std::thread t\{[=] \{ do_something_with(s); \}\};\end{codeblock}
+
+\item<4-> by reference (possibly \code{const}), to interact with the smart
+  pointer itself
+  \begin{codeblock}
+void print_count(std::shared_ptr<Regression> const& s) \{
+  std::cout << s.use_count() << \bslashn{};
+\};
+auto s = std::make_shared<Regression>();
+print_count(s);\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Smart pointers and functions \insertcontinuationtext}
+  \begin{itemize}[<+->]
+  \item Otherwise pass the pointee by (const) reference/pointer
+    \begin{codeblock}<.->{
+void fit(std::shared_ptr<Regression> s) \{ if (s) s->fit(); \}
+void fit(Regression* t)                 \{ if (t) t->fit(); \} // better
+void fit(Regression& t)                 \{ t.fit(); \}         // better
+
+auto s = std::make_shared<Regression>();
+fit(s);
+fit(s->get());
+if (s) fit(*s);}\end{codeblock}
+
+  \item Return a smart pointer from a function if the function
+    has dynamically allocated a resource that is passed to the caller
+
+    \begin{codeblock}<.->{
+auto factory() \{ return std::make_unique<Regression>(); \}
+
+auto u = factory();     // std::unique_ptr<Regression>
+\uncover<+->{std::shared_ptr<Regression> s = std::move(u);}
+
+\uncover<+->{std::shared_ptr<Regression> s = factory();}}\end{codeblock}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Smart pointer custom deleter}
+  \begin{itemize}
+  \item A smart pointer is a general-purpose resource handler
+  \item The resource release is not necessarily done with \code{delete}
+  \item \code{unique_ptr} and \code{shared_ptr} support a
+    \textit{custom deleter}
+  \end{itemize}
+
+  \begin{codeblock}<2->{
+FILE* f = std::fopen(\ddd);
+\ddd
+std::fclose(f);}\end{codeblock}
+
+  \uncover<3->{
+    Usual problems:
+    \begin{columns}[t]
+      \begin{column}{.5\textwidth}
+        \begin{itemize}
+        \item Who owns the resource?
+        \item Forgetting to release
+        \end{itemize}
+      \end{column}
+      \begin{column}{.5\textwidth}
+        \begin{itemize}
+        \item Releasing twice
+        \item Early return/throw
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  }
+
+  \begin{codeblock}<4->{
+std::shared_ptr<FILE> file\{
+    std::fopen(\ddd),                 // pointer
+    [](FILE* f) \{ std::fclose(f); \} // deleter
+\};}\end{codeblock}
+
+\end{frame}
