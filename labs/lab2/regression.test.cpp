@@ -2,7 +2,6 @@
 
 #include "doctest.h"
 
-#include <iostream>
 #include <stdexcept>
 
 struct Result {
