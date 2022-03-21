@@ -6,7 +6,7 @@ scritto nel secondo laboratorio per implementare e testare la classe
 
 Per lo svolgimento, consigliamo di tenere aperta la parte inerente al
 _compilation model_ delle
-[slide](https://github.com/giacomini/pf2021/releases/tag/pdf_20220228)
+[slide](https://github.com/giacomini/pf2021/releases/download/pdf_20220315/pf2021.pdf)
 presentate a lezione.
 
 - [Lab 3](#lab-3)
@@ -126,6 +126,8 @@ TEST_CASE("testing Regression") {
 }
 ```
 
+Verifichiamo __compilando di nuovo__.
+
 ### Test della _One-Definition Rule_ ed uso di _include guard_
 
 Cosa succede se includiamo `regression.hpp` __due__ volte? Abbiamo visto che può
@@ -202,8 +204,8 @@ $ ./a.out
 [doctest] Status: SUCCESS!
 ```
 
-Dopo questa verifica, provvediamo a rimuovere lo statement `#include` duplicato
-in:
+Dopo questa verifica, provvediamo a rimuovere lo statement `#include` duplicato,
+che abbiamo utilizzato per il test, in:
 
 ```c++
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -217,15 +219,13 @@ TEST_CASE("testing Regression") {
 }
 ```
 
-che abbiamo utilizzato per il test.
-
 ### Utilizzo di `Regression` in più di una translation-unit
 
 Supponiamo ora che il nostro componente software sia parte, o venga usato, in un
 progetto con molti file e che quindi `regression.hpp` possa essere incluso in
 più TU.
 
-Il modo più semplice per porsi in tale situazione, e quindi di verificare che
+Il modo più semplice per porsi in tale situazione, e quindi verificare che
 stiamo facendo le cose per bene, è di aggiungere una TU formata da un file
 sorgente che si limiti a includere l'header corrispondente. Questa TU viene poi
 integrata nel nostro comando di compilazione.
@@ -367,15 +367,13 @@ void Regression::add(double x, double y) {
 
 Verifichiamo quindi che compilazione e test vadano a buon fine.
 
-> __NOTA__: una funzione può essere definita `inline` __se e
-> solo se la sua definizione è in un header file__, cosa succede se la parola
-> chiave `inline` non viene rimossa quando spostiamo la definizione nel file
-> `regression.cpp`?.
+> __NOTA__: una volta spostata la definizione di
+> `Regression::add(double x, double y)` in `regression.cpp` dobbiamo ricordarci
+> di rimuovere la parola chiave `inline`. Cosa succede se non lo facciamo?
 
 Procediamo nello stesso modo spostando anche `fit(Regression const& reg)`.
 Compilando possiamo notare che non ci sono errori, ma è facile verificare che,
-a questo punto, tale funzione appena non è più visibile al di fuori di
-`regression.cpp`.
+a questo punto, la funzione non è più visibile al di fuori di `regression.cpp`.
 
 Per farlo, possiamo semplicemente sostituire una qualsiasi
 chiamata a `Regression::fit()` all'interno di `regression.test.cpp` con una
@@ -419,7 +417,7 @@ Result fit() const {
 }
 ```
 
-Ricordandoci, ad ogni passaggio, di compilare e di eseguire i test.
+Ricordandoci, ad ogni passaggio, di __compilare e di eseguire i test__.
 
 ### Soluzione
 
@@ -428,24 +426,24 @@ nella cartella [solution](solution).
 
 ## Consegna del lavoro svolto
 
-Come per il primo laboratorio, la consegna del lavoro svolto è:
+Come per gli altri laboratori, la consegna del lavoro svolto è:
 
 - __obbligatoria__ per coloro che hanno seguito il laboratorio __da remoto__;
 - __facoltativa__ per coloro che anno seguito il laboratorio __in presenza__.
 
 Nel primo caso, la consegna è utilizzata come strumento per verificare
 l'effettivo svolgimento dell'attività di laboratorio. Nel secondo, la consegna è
-un'opzione che lasciamo a quegli studenti che, incerti su alcuni punti, vogliono
-presentare il lavoro svolto per chiarire i loro dubbi.
+un'opzione che lasciamo a quegli studenti che, incerti su alcuni punti, vogliano
+sottoporci il loro elaborato per chiarire eventuali dubbi.
 
 In entrambi i casi, le consegne del lavoro svolto in laboratorio __non verranno
 valutate__ e __NON contribuiscono al risultato dell'esame__.
 
 La consegna deve avvenire, da parte dei singoli studenti, tramite
-[questo link](https://virtuale.unibo.it/mod/assign/view.php?id=775795), seguendo
-una procedura analoga a quella discussa [durante il primo laboratorio](https://github.com/giacomini/pf2021/blob/main/labs/lab1/lab1.md#consegna-del-lavoro-svolto).
+[questo link](https://virtuale.unibo.it/mod/assign/view.php?id=860528), seguendo
+una procedura analoga a quella discussa [durante il primo laboratorio](../lab1/lab1.md#consegna-del-lavoro-svolto).
 
-Il link prevede il solo caricamento di file `.zip` o `.tgz`.
+Il link accetta il solo caricamento di file `.zip` o `.tgz`.
 
 Tutti coloro che effettuano una consegna facoltativa, sono pregati di riportare,
 come commento alla consegna stessa, dubbi o domande sull'elaborato per i quali
@@ -454,8 +452,8 @@ come commento alla consegna stessa, dubbi o domande sull'elaborato per i quali
 ## Bonus
 
 Per chi fosse interessato a "sperimentare ulteriormente" gli argomenti
-presentati in questo laboratorio, vengono proposti alcuni possibili
-approfondimenti __opzionali__:
+presentati in questo laboratorio, viene proposto un possibile approfondimento
+__opzionale__:
 
 1. Provate ad aggiungere un nuovo file `main.cpp` contenente una funzione
    `main` che usa i componenti definiti sopra. Il programma accetta dall'utente comandi:
