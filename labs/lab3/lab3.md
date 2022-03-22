@@ -63,9 +63,9 @@ il codice.
 Quello che ci prefiggiamo di fare durante questa esercitazione è separare il
 codice presente all'interno di `regression.test.cpp`, in modo tale da giungere in una situazione in cui ci siano:
 
-- due file `regression.hpp` e `regression.cpp` con tutto il codice necessario al
-  calcolo della retta di regressione, quindi tutte le classi e le funzioni a
-  esclusione dei test;
+- due file (`regression.hpp` e `regression.cpp`) con tutto il codice necessario
+  per il calcolo della retta di regressione, quindi tutte le classi e le
+  funzioni a esclusione dei test;
 - un file `regression.test.cpp` contenente solo i test e il supporto per la loro
   esecuzione.
 
@@ -455,8 +455,20 @@ Per chi fosse interessato a "sperimentare ulteriormente" gli argomenti
 presentati in questo laboratorio, viene proposto un possibile approfondimento
 __opzionale__:
 
-1. Provate ad aggiungere un nuovo file `main.cpp` contenente una funzione
-   `main` che usa i componenti definiti sopra. Il programma accetta dall'utente comandi:
-   - `a`: per aggiungere un punto (x,y) scrivendo `a x y`. Ad esempio, per  
-     aggiungere il punto (0,0), scrive `a 0 0`
-   - `f` per eseguire il fit e stampare l'equazione della retta di regressione
+Provate ad aggiungere un nuovo file `main.cpp` contenente una funzione `main`
+che usa i componenti definiti sopra.
+
+Il programma accetta dall'utente comandi:
+
+- `a`: per aggiungere un punto (x,y). Una volta digitato `a` e premuto invio,
+  i punti si aggiungono scrivendo `x y` alla riga successiva. Ad esempio, per
+  aggiungere il punto (0,0), scrive `a` premere invio, poi digitare `0 0`;
+
+- `f` per eseguire il fit (in caso sia stato immesso un un numero di punti
+  sufficienti), stampare l'equazione della retta di regressione ed uscire dal
+  programma.
+
+Qualora vengano immessi comandi sconosciuti, il programma deve menzionarlo,
+per poi richiedere di nuovo l'inserimento di un comando valido.
+
+Ricordatevi inoltre di gestire le eccezioni.
