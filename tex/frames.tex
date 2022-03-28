@@ -7659,3 +7659,470 @@ std::shared_ptr<FILE> file\{
 \};}\end{codeblock}
 
 \end{frame}
+
+\begin{frame}{Taxonomy of STL Containers}
+
+  \begin{description}
+  \item[Sequence] The client decides where an element gets inserted
+    \begin{itemize}
+    \item \textbf{\code{array}}, \code{deque}, \code{forward\_list},
+      \code{list}, \textbf{\code{vector}}
+    \end{itemize}
+  \item[Associative] The container decides where an element gets
+    inserted
+    \begin{description}
+    \item[Ordered] The elements are sorted
+      \begin{itemize}
+      \item \textbf{\code{map}}, \code{multimap}, \code{set}, \code{multiset}
+      \end{itemize}
+    \item[Unordered] The elements are hashed
+      \begin{itemize}
+      \item \code{unordered_map}, \code{unordered_multimap},
+        \code{unordered_set}, \code{unordered_multiset}
+      \end{itemize}
+    \end{description}
+  \end{description}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sequence containers}
+
+  \setlength{\bytesize}{0.2cm}
+  \setlength{\memwidth}{8\bytesize}
+  \setlength{\memheight}{5cm}
+
+  \begin{columns}[T]
+    \begin{column}{.3\textwidth}
+
+      \code{std::array}
+
+      \begin{tikzpicture}[
+          word/.style={
+            draw=black!50,
+            minimum height=\bytesize,
+            minimum width=8\bytesize,
+            fill=blue!80!white,
+            inner sep=0pt
+          },
+          anchor=south west
+        ]
+        \node (memory) at (0,0) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\memheight,
+          draw=black
+        ] {};
+        \node at (0,.7\memheight) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=.3\memheight,
+          draw=black,
+          fill=green!10!white
+        ] {};
+        \node at (0,.5\memheight+.5cm) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=7\bytesize,
+          draw=black,
+          fill=green!30!white,
+          label={[yshift=-0.4cm]\scriptsize\tt foo}
+        ] {};
+        \node (word1) at (0,3.1cm) [word] {};
+        \node (word2) [word,above=0 of word1] {};
+        \node (word3) [word,above=0 of word2] {};
+        \node (word4) [word,above=0 of word3] {};
+        \node at (0,0) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={270:{\tiny\tt 0x00..00}}
+        ] {};
+        \node at (\memwidth-\bytesize,\memheight-\bytesize) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={90:{\tiny\tt 0xff..ff}}
+        ] {};
+        \draw [dashed] (-.5cm,.5\memheight) -- (\memwidth + .5cm,.5\memheight);
+        \node at (0,4) [rotate=90] {\scriptsize\textit{stack}};
+        \node at (0,0) [rotate=90] {\scriptsize\textit{heap}};
+      \end{tikzpicture}
+    \end{column}
+
+    \begin{column}{.3\textwidth}<2->
+
+      \code{std::vector}
+
+      \begin{tikzpicture}[
+          word/.style={
+            draw=black!50,
+            minimum height=\bytesize,
+            minimum width=8\bytesize,
+            fill=blue!80!white,
+            inner sep=0pt
+          },
+          anchor=south west
+        ]
+        \node (memory) at (0,0) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\memheight,
+          draw=black
+        ] {};
+        \node at (0,.7\memheight) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=.3\memheight,
+          draw=black,
+          fill=green!10!white
+        ] {};
+        \node at (0,.5\memheight+.5cm) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=6\bytesize,
+          draw=black,
+          fill=green!30!white,
+          label={[yshift=-0.4cm]\scriptsize\tt foo}
+        ] {};
+        \node (beg) at (0,3.1cm) [word,green!50!black,draw=black!50!white] {};
+        \node (end) [word,above=0 of beg,green!50!black,draw=black!50!white] {};
+        \node (cap) [word,above=0 of end,green!50!black,draw=black!50!white] {};
+        \node (word1) at (0,.4cm) [word] {};
+        \node (word2) [word,above=0 of word1] {};
+        \node (word3) [word,above=0 of word2] {};
+        \node (word4) [word,above=0 of word3] {};
+        \node (word5) [word,above=0 of word4,blue!20!white,draw=black!50!white] {};
+        \node (word6) [word,above=0 of word5,blue!20!white,draw=black!50!white] {};
+        \node (word7) [word,above=0 of word6,blue!20!white,draw=black!50!white] {};
+        \node (word8) [word,above=0 of word7,blue!20!white,draw=black!50!white] {};
+        \node (sentinel) [word,draw=none,fill=none,above=0 of word8] {};
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (beg.east) .. controls +(.5,-2) .. (word1.east);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (end.east) .. controls +(.5,-1.5) .. (word5.east);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (cap.east) .. controls +(.5,-1) .. (sentinel.east);
+        \node at (0,0) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={270:{\tiny\tt 0x00..00}}
+        ] {};
+        \node at (\memwidth-\bytesize,\memheight-\bytesize) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={90:{\tiny\tt 0xff..ff}}
+        ] {};
+        \draw [dashed] (-.5cm,.5\memheight) -- (\memwidth + .5cm,.5\memheight);
+        \node at (0,4) [rotate=90] {\scriptsize\textit{stack}};
+        \node at (0,0) [rotate=90] {\scriptsize\textit{heap}};
+      \end{tikzpicture}
+    \end{column}
+
+    \begin{column}{.3\textwidth}<3->
+
+      \code{std::list}
+
+      \begin{tikzpicture}[
+          word/.style={
+            draw=black!50,
+            minimum height=\bytesize,
+            minimum width=8\bytesize,
+            fill=blue!80!white,
+            inner sep=0pt
+          },
+          anchor=south west
+        ]
+        \node (memory) at (0,0) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=\memheight,
+          draw=black
+        ] {};
+        \node at (0,.7\memheight) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=.3\memheight,
+          draw=black,
+          fill=green!10!white
+        ] {};
+        \node at (0,.5\memheight+.5cm) [
+          rectangle,
+          minimum width=\memwidth,
+          minimum height=6\bytesize,
+          draw=black,
+          fill=green!30!white,
+          label={[yshift=-0.4cm]\scriptsize\tt foo}
+        ] {};
+        \node (beg) at (0,3.1cm) [word,green!50!black,draw=black!50!white] {};
+        \node (end) [word,above=0 of beg,green!50!black,draw=black!50!white] {};
+        \node (size) [word,above=0 of end,green!60!black,draw=black!50!white] {};
+        \node (word1) at (0,1.8cm) [word] {};
+        \node (next1) [word,above=0 of word1,red!70!white,draw=black!50!white] {};
+        \node (prev1) [word,above=0 of next1,yellow!80!black,draw=black!50!white] {};
+        \node (word2) at (0,.2cm) [word] {};
+        \node (next2) [word,above=0 of word2,red!70!white,draw=black!50!white] {};
+        \node (prev2) [word,above=0 of next2,yellow!80!black,draw=black!50!white] {};
+        \node (word3) at (0,1.cm) [word] {};
+        \node (next3) [word,above=0 of word3,red!70!white,draw=black!50!white] {};
+        \node (prev3) [word,above=0 of next3,yellow!80!black,draw=black!50!white] {};
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (beg.east) .. controls +(.5,-.5) .. (word1.east);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (end.west) .. controls +(-.5,-1.5) .. (word3.west);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (next1.east) .. controls +(.5,-.4) .. (word2.east);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (next2.west) .. controls +(-.5,.3) .. (word3.west);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (prev2.east) .. controls +(.3,1) .. (word1.east);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (prev3.west) .. controls +(-.5,-1) .. (word2.west);
+        \draw[{Circle[length=2pt]}-{Rectangle[length=2pt,width=5pt]},black!80] (prev1.east) -- +(.5,0);
+        \draw[{Circle[length=2pt]}-{Rectangle[length=2pt,width=5pt]},black!80] (next3.west) -- +(-.5,0);
+        \node at (0,0) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={270:{\tiny\tt 0x00..00}}
+        ] {};
+        \node at (\memwidth-\bytesize,\memheight-\bytesize) [
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black,
+          densely dotted,
+          label={90:{\tiny\tt 0xff..ff}}
+        ] {};
+        \draw [dashed] (-.5cm,.5\memheight) -- (\memwidth + .5cm,.5\memheight);
+        \node at (0,4) [rotate=90] {\scriptsize\textit{stack}};
+        \node at (0,0) [rotate=90] {\scriptsize\textit{heap}};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Sequence containers \insertcontinuationtext}
+
+  \begin{itemize}
+  \item \code{std::array}
+    \begin{itemize}
+    \item fixed size, contiguous in memory
+    \item typical operations
+      \begin{itemize}
+      \item \code{operator[]}
+      \item iteration
+      \end{itemize}
+    \end{itemize}
+  \item \code{std::vector}
+    \begin{itemize}
+    \item dynamic size, contiguous in memory
+    \item typical operations
+      \begin{itemize}
+      \item \code{push_back}
+      \item \code{operator[]}
+      \item iteration
+      \end{itemize}
+    \end{itemize}
+  \item \code{std::list}
+    \begin{itemize}
+    \item dynamic size, non-contiguous in memory, iterator stability
+    \item typical operations
+      \begin{itemize}
+      \item \code{push_back}, \code{push_front}, \code{insert}
+      \item iteration
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Associative ordered containers}
+
+  \begin{itemize}
+  \item They contain ordered values (\code{set} and \code{multiset}) or
+    key-value pairs (\code{map} and \code{multimap})
+  \item Search, removal and insertion have logarithmic complexity
+  \item<2-> Typically implemented as balanced (red-black) trees
+  \end{itemize}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}<2->
+      \tikz \node (rbtree)
+            {\includegraphics[width=\textwidth]{images/rbtree}};
+
+      \tikz[align=left] \node [below=of rbtree,node font=\tiny\itshape] {By Cburnett -- Own work, CC
+        BY-SA 3.0\\https://commons.wikimedia.org/w/index.php?curid=1508398};
+    \end{column}
+
+    \begin{column}{.5\textwidth}<3->
+      \setlength{\bytesize}{0.2cm}
+      \setlength{\memwidth}{8\bytesize}
+      \setlength{\memheight}{5cm}
+
+      \begin{tikzpicture}[
+          word/.style={
+            draw=black!50,
+            minimum height=\bytesize,
+            minimum width=8\bytesize,
+            inner sep=0pt
+          },
+          anchor=south west
+        ]
+
+        \node (word) at (0,0) [word,fill=blue!90!black,text=white] {\tiny value};
+        \node (next) [word,above=0 of word,fill=red!90!black] {};
+        \node (prev) [word,above=0 of next,fill=yellow!90!black] {};
+        \node (parent) [word,above=0 of prev,fill=green!90!black] {};
+        \node (color) [word,above=0 of parent,fill=black!20!white] {};
+        \node [above left=0 and -\bytesize of parent,
+          rectangle,
+          inner sep=0pt,
+          minimum width=\bytesize,
+          minimum height=\bytesize,
+          draw=black!50,
+          fill=none,
+          label={90:{\tiny color}}
+        ] {};
+
+        \node (wordp) [word,above right=1.1 and .1 of word,fill=blue!90!black,opacity=.3] {};
+        \node (nextp) [word,above=0 of wordp,fill=red!90!black,opacity=.3] {};
+        \node (prevp) [word,above=0 of nextp,fill=yellow!90!black,opacity=.3] {};
+        \node (parentp) [word,above=0 of prevp,fill=green!90!black,opacity=.3] {};
+        \node (colorp) [word,above=0 of parentp,fill=black!20!white,opacity=.3] {};
+
+        \node (wordl) [word,below left=1.1 and .1 of word,fill=blue!90!black,opacity=.3] {};
+        \node (nextl) [word,above=0 of wordl,fill=red!90!black,opacity=.3] {};
+        \node (prevl) [word,above=0 of nextl,fill=yellow!90!black,opacity=.3] {};
+        \node (parentl) [word,above=0 of prevl,fill=green!90!black,opacity=.3] {};
+        \node (colorl) [word,above=0 of parentl,fill=black!20!white,opacity=.3] {};
+
+        \node (wordr) [word,below right=1.1 and .1 of word,fill=blue!90!black,opacity=.3] {};
+        \node (nextr) [word,above=0 of wordr,fill=red!90!black,opacity=.3] {};
+        \node (prevr) [word,above=0 of nextr,fill=yellow!90!black,opacity=.3] {};
+        \node (parentr) [word,above=0 of prevr,fill=green!90!black,opacity=.3] {};
+        \node (colorr) [word,above=0 of parentr,fill=black!20!white,opacity=.3] {};
+
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (parent.east) to [out=0,in=270] node[auto,swap] {\tiny parent} (wordp.south);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (prev.west) to [out=180,in=90] node[auto,swap] {\tiny left} (colorl.north);
+        \draw[{Circle[length=2pt]}-Stealth,black!80] (next.east) to [out=0,in=90] node[auto,swap] {\tiny right} (colorr.north);
+
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Non-local variables}
+
+  \begin{columns}
+    \begin{column}{.75\textwidth}
+      \begin{itemize}
+      \item Variables can be declared outside a function block
+        \begin{codeblock}<2->{
+#include <random>
+
+std::default_random_engine eng;
+
+auto seed_rand(int s) \{ eng.seed(s); \}
+auto get_rand() \{ return eng(); \}
+auto print_rand() \{ std::cout << get_rand() << \bslashn{};\}}\end{codeblock}
+
+      \item<2-> \code{eng} above is also called a \textit{global} variable
+      \item<3-> They have \textit{static} storage duration, i.e. they live for the
+        whole program duration
+      \item<3-> They live in the \textbf{Static Data} memory segment
+      \item<4-> They are initialized before \code{main} is called
+      \end{itemize}
+
+    \end{column}
+    \begin{column}{.25\textwidth}<3->
+      \centering\includegraphics[height=.5\textheight]{images/process-memory-layout}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Non-local variables \insertcontinuationtext}
+  \begin{itemize}
+  \item<1-> Initialization
+    \begin{itemize}
+    \item Memory for non-local variables is guaranteed to be at least
+      initialized to all zeroes
+    \item They may be initialized to a constant value known at compile time
+    \item They may be initialized dynamically at runtime, e.g. with the result
+      of a function call
+    \end{itemize}
+  \item<2-> Warning
+    \begin{itemize}
+    \item Non-local variables make reasoning about the program more difficult
+      because they encourage to work by side effects
+    \item The order of initialization is deterministic only in the same
+      translation unit
+    \item \alert{Better avoid them}, especially if mutable (i.e. non constant)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Constants}
+
+  \begin{itemize}
+  \item One useful application of non-local variables is to define constants
+    \begin{codeblock}
+constexpr double astronomical_unit = 1.496e11; // meters
+constexpr double pi = 3.14159265358979323846;\end{codeblock}
+  \item<2-> \code{constexpr} implies \code{const}, but \alert{guarantees} that the
+    initialization is done at compile time
+    \begin{itemize}
+    \item<2-> possibly through the execution of a \textit{constexpr} function
+    \end{itemize}
+  \item<3->Of course constants can be defined locally as well
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Class \code{static} data members}
+
+  \begin{itemize}
+  \item<1-> A class data member declared \alert{\code{static}} is not part of
+    any object of that class
+  \item<2-> A static data member
+    \begin{itemize}
+    \item<2-> exists even if there are no objects of that class
+    \item<3-> has static storage duration
+    \item<4-> is defined out-of-class \ldots
+    \item<5-> \ldots unless it's declared \code{inline} (C++17) or
+      \code{constexpr} or is a \code{const} integral type
+    \end{itemize}
+    \vskip -.5cm
+    \begin{columns}[t]<4->
+      \begin{column}{.5\textwidth}<4->
+        \begin{codeblock}<4->{
+struct X \{
+  static int n;
+\};
+// probably in a .cpp file
+int X::n = 42;}\end{codeblock}
+      \end{column}
+      \begin{column}{.5\textwidth}
+        \begin{codeblock}<5->{
+struct X \{
+  inline static int n = 42;
+\};}\end{codeblock}
+      \end{column}
+    \end{columns}
+    \item<6-> How to access a static data member
+      \begin{codeblock}
+std::cout << std::chrono::\textbf{system_clock}\alert{::}is_steady;
+
+std::chrono::system_clock clock;
+std::cout << \textbf{clock}\alert{.}is_steady\end{codeblock}
+
+  \end{itemize}
+\end{frame}
