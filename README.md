@@ -18,7 +18,7 @@ git clone https://github.com/giacomini/pf2021.git
 
 oppure scaricando direttamente un file `zip`.
 
-A breve verrà resa disponibile e illustrata a lezione una introduzione a Git.
+Le slide della lezione di introduzione a Git sono disponibili [qui](https://github.com/rsreds/git_course).
 
 ## Piattaforma di riferimento
 
