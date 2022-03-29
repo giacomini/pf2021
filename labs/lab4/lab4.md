@@ -14,6 +14,7 @@ presentate a lezione.
   - [Utilizzo di Git (locale)](#utilizzo-di-git-locale)
     - [Ispezionare lo stato della repo](#ispezionare-lo-stato-della-repo)
     - [Aggiungere file alla repo](#aggiungere-file-alla-repo)
+    - [Cambiare nome ad un branch](#cambiare-nome-ad-un-branch)
     - [Aggiungere `.gitignore`](#aggiungere-gitignore)
     - [Controllare le differenze tra due commit](#controllare-le-differenze-tra-due-commit)
   - [Applicare una modifica al progetto](#applicare-una-modifica-al-progetto)
@@ -31,15 +32,15 @@ prima cosa verifichiamolo:
 
 ```bash
 $ git --version
-git version 2.35.1
+git version 2.25.1
 ```
+
+> __NOTA__: il numero esatto della versione di Git potrebbe variare a seconda
+> del sistema operativo utilizzato.
 
 Una volta effettuata la verifica, procediamo quindi configurando Git per
 riconoscere chi siamo quando, d'ora in poi, aggiungeremo file alle _repository_
 (o _repo_) con cui lavoreremo.
-
-Scegliamo in seguito di utilizzare `main` come nome del ramo (_branch_)
-principale di sviluppo invece di `master`.
 
 Ed, infine, impostiamo `nano` (strumento _leggero_ e facile da utilizzare) come
 editor di default per Git.
@@ -51,14 +52,11 @@ Possiamo ispezionarlo tramite il comando `cat`.
 ```bash
 $ git config --global user.email "carlo.battilana@cern.ch"
 $ git config --global user.name "Carlo Battilana"
-$ git config --global init.defaultBranch "main"
 $ git config --global core.editor "nano"
 $ cat ~/.gitconfig
 [user]
         email = carlo.battilana@cern.ch
         name = Carlo Battilana
-[init]
-       defaultBranch = main
 [core]
         editor = nano
 ...
@@ -156,6 +154,27 @@ drwxr-xr-x  9 carlo  staff     288 18 Mar 17:56 .git
 
 > __NOTA__: la cartella nascosta `.git` contiene le informazioni relative alla
 > repo.
+>
+> __NOTA__: in alcune versione recenti di Git (es.: 2.35.1), il comando `git
+> init` potrebbe generare il seguente messaggio:
+
+```bash
+$ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint:   git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint:   git branch -m <name>
+```
+
+> se incontrate questo messaggio, per ora, non preoccupatevi. Provvederemo
+> [più avanti](#cambiare-nome-ad-un-branch) nell'esercitazione a cambiare il
+> nome del branch in `main`.
 
 ## Utilizzo di Git (locale)
 
@@ -169,7 +188,7 @@ Proviamoli:
 
 ```bash
 $ git status
-On branch main
+On branch master
 
 No commits yet
 
@@ -183,7 +202,7 @@ Untracked files:
 
 nothing added to commit but untracked files present (use "git add" to track)
 $ git log
-fatal: your current branch 'main' does not have any commits yet
+fatal: your current branch 'master' does not have any commits yet
 ```
 
 Come possiamo notare, il fatto che i file del nostro progetto fossero già
@@ -201,7 +220,7 @@ Aggiungiamo quindi i file relativi al progetto nella nostra repo:
 ```bash
 $ git add .clang-format doctest.h regression.cpp regression.hpp regression.test.cpp
 $ git status
-On branch main
+On branch master
 
 No commits yet
 
@@ -214,7 +233,7 @@ Changes to be committed:
         new file:   regression.test.cpp
 
 $ git commit -m "Add first project version"
-[main (commit radice) 04a520f] Add first project version
+[master (commit radice) 04a520f] Add first project version
  5 files changed, 13418 insertions(+)
  create mode 100644 .clang-format
  create mode 100644 doctest.h
@@ -231,10 +250,10 @@ Proviamo quindi a verificare nuovamente lo stato della repo:
 
 ```bash
 $ git status
-On branch main
+On branch master
 nothing to commit, working tree clean
 $ git log
-commit 8476457208b06d448f83f90aa235c4c1e4bad643 (HEAD -> main)
+commit 8476457208b06d448f83f90aa235c4c1e4bad643 (HEAD -> master)
 Author: Carlo Battilana <carlo.battilana@cern.ch>
 Date:   Sat Mar 19 14:46:30 2022 +0100
 
@@ -242,11 +261,28 @@ Date:   Sat Mar 19 14:46:30 2022 +0100
 ```
 
 A questo punto il comando `git status` ci informa che la nostra area di lavoro
-non mostra modifiche rispetto all'ultima versione del codice nel branch `main`
+non mostra modifiche rispetto all'ultima versione del codice nel branch `master`
 della repo.
 
 Il comando `git log`, invece evidenzia la presenza di un singolo commit (nel
-branch `main`) e ne fornisce alcuni dettagli.
+branch `master`) e ne fornisce alcuni dettagli.
+
+### Cambiare nome ad un branch
+
+Come discusso a lezione, molti progetti si stanno lentamente muovendo verso nomi
+diversi da `master` per il branch di default.
+
+Decidiamo quindi di rinominare il nostro branch di default in `main`:
+
+```bash
+$ git branch -m master main
+$ git status
+On branch main
+nothing to commit, working tree clean
+```
+
+come possiamo notare, ripetendo il comando `git status`, questo riporta che
+stiamo ora lavorando sul branch `main`.
 
 ### Aggiungere `.gitignore`
 
@@ -289,7 +325,7 @@ l'output del comando `git status`, infine procediamo ad aggiungere e committare
 `.gitignore`:
 
 ```bash
-$ code .gitignore
+$ nano .gitignore
 $ cat .gitignore
 a.out
 $ git status
@@ -774,7 +810,7 @@ Per farlo suggeriamo di procedere per passi:
   ```c++
   bool remove(double x, double y)
   {
-    Regression:Point p_rm{x,y}
+    Point p_rm{x,y}
     for (auto p_it = points_.begin(), p_end = points_.end(); p_it != p_end; ++p_it) {
       if ((*p_it) == p_rm) {
         points_.erase(p_it);
