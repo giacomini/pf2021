@@ -8561,14 +8561,12 @@ auto g() \{
 \begin{frame}[fragile]{Overriding vs overloading}
 
   \begin{codeblock}
-struct Base
-\{
-    virtual \alert{void f(int)};
+struct Base \{
+  virtual \alert{void f(int)};
 \};
 
-struct Derived : Base
-\{
-    \only<6->{virtual }\alert{void f(int)};\uncover<5->{ // overriding, virtuality is "inherited"}
+struct Derived : Base \{
+  \only<6->{virtual }\alert{void f(int)};\uncover<5->{ // overriding, virtuality is "inherited"}
 \};
 
 \uncover<2->{Derived d;
@@ -8580,14 +8578,12 @@ Base& b = d;}
 \begin{frame}[fragile]{Overriding vs overloading \insertcontinuationtext}
 
   \begin{codeblock}
-struct Base
-\{
-    virtual \alert{void f(int)};
+struct Base \{
+  virtual \alert{void f(int)};
 \};
 
-struct Derived : Base
-\{
-    \only<8>{virtual }\alert{void f(unsigned)}\only<9->{ override};\only<5-7>{ // overloading! this is another function}\only<8>{ // still overloading}\only<9->{ // error: does not override}
+struct Derived : Base \{
+  \only<8>{virtual }\alert{void f(unsigned)}\only<9->{ override};\only<5-7>{ // overloading! this is another function}\only<8>{ // still overloading}\only<9->{ // error: does not override}
 \};
 
 \uncover<2->{Derived d;
@@ -8595,8 +8591,16 @@ Base& b = d;}
 \uncover<3->{b.f(1);}\uncover<4->{          // call Base::f(int)}
 \uncover<6->{b.f(1U);}\uncover<7->{         // call Base::f(int)}\end{codeblock}
 
-  \uncover<10->{Virtual functions should specify exactly one of \code{virtual} or
-    \code{override} (or \code{final})}
+  \uncover<10->{Virtual functions should specify exactly one of \code{virtual}, 
+    \code{override}, or \code{final}
+    \begin{itemize}
+    \item A \code{final} virtual function cannot be overridden in a derived
+      class
+    \item A class can be declared \code{final} and cannot be derived from
+      \begin{codeblock}
+struct Derived final \{ \ddd \};\end{codeblock}
+    \end{itemize}
+  }
 
 \end{frame}
 
@@ -8617,8 +8621,8 @@ struct Derived : Base
 Base const& b = d;}
 \uncover<3->{b.f(1);}\uncover<4->{          // call Base::f(int) const}\end{codeblock}
 
-  \uncover<8->{Virtual functions should specify exactly one of \code{virtual} or
-    \code{override} (or \code{final})}
+  \uncover<8->{Virtual functions should specify exactly one of \code{virtual},
+    \code{override} or \code{final}}
 
 \end{frame}
 
@@ -8777,7 +8781,7 @@ class Rectangle : \alert<1>{public} Shape \{\only<1>{ // \alert{is-a}}
     class
   \item A way to create a distinct type with the same implementation and
     interface of another
-  \item<5-> Consider private inheritance or composition
+  \item<5-> Consider composition, i.e. a member, or private inheritance
   \end{itemize}
 
   \begin{codeblock}<2->{
@@ -8789,11 +8793,11 @@ class Vector : public std::vector<int> \{
 void process(Vector&);           // #2}
 \uncover<4->{void signal(std::vector<int>&);  // #3}
 
-\uncover<3->{std::vector<int> v1;
-Vector v2;
-process(v1);         // call #1
-process(v2);         // call #2}
-\uncover<4->{signal(v2);          // call #3}}\end{codeblock}
+\uncover<3->{std::vector<int> v1\{\ddd\};
+Vector v2\{\ddd\};           // all std::vector ctors are available
+process(v1);              // call #1
+process(v2);              // call #2}
+\uncover<4->{signal(v2);               // call #3}}\end{codeblock}
 
 \end{frame}
 
@@ -8880,7 +8884,7 @@ class Derived: public Base
 
 \end{frame}
 
-\begin{frame}{What we have learnt}
+\begin{frame}{What we have learnt in this course}
   \begin{itemize}
   \item Introduction to Linux
   \item Elements of computer architecture and operating systems
@@ -8888,11 +8892,11 @@ class Derived: public Base
   \item Objects, types, variables
   \item Expressions
   \item Statements and structured programming
-  \item Functions
-  \item User-defined types and classes
+  \item Functions and function objects
+  \item User-defined types and classes and operator overloading
   \item Generic programming and templates
-  \item The Standard Library, containers, algorithms
-  \item Dynamic memory allocation
+  \item The Standard Library, containers and algorithms
+  \item Dynamic memory allocation and resource management
   \item Dynamic polymorphism (aka object-oriented programming)
   \item Error management
   \item Elements of software engineering and supporting tools
@@ -8902,8 +8906,11 @@ class Derived: public Base
 \begin{frame}{Where to go from here}
 
   \begin{itemize}
-  \item C++ is a large and complex language and has a large and complex library
-  \item We have just scratched the surface of what the language and the library provide
+  \item C++ is a large and complex language and has a large and complex standard library
+    \begin{itemize}
+    \item Many more libraries are available from third parties
+    \end{itemize}
+  \item We have just scratched the surface of what the language and the libraries provide
   \item There are many high-quality resources to go deeper
     \begin{itemize}
     \item \url{https://isocpp.org/}
