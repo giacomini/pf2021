@@ -3,8 +3,8 @@
 
 #include "chain.hpp"
 
-// Esegue la simulazione della chain, suddividendo "duration" in "steps"
-// e registrando lo stato ogni colta che si compie un numero di step pari
+// Esegue la simulazione della catena, suddividendo "duration" in "steps"
+// e registrando lo stato ogni volta che si compie un numero di step pari
 // a "prescale"
 auto simulate(Chain &chain, double duration, int steps, int prescale) {
   std::vector<std::vector<PPState>> v_states;
@@ -24,12 +24,12 @@ auto simulate(Chain &chain, double duration, int steps, int prescale) {
 int main() {
   // Molla con:
   // k = 1 N/m
-  // ; = 10 cm
+  // l = 1 cm
   Hooke hooke{1.0, 0.01};
 
   // Catena con 10 punti materiali:
   // m: 50 g per ogni punto
-  // x: un punto ogni 11 cm
+  // x: un punto ogni 1.1 cm (partendo da 0.0)
   // v: tutti i punti hanno v = 0 m/s
   Chain chain(hooke);
 
