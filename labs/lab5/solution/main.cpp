@@ -62,7 +62,7 @@ int main() {
 
   double sum_length{0.0};
 
-  std::cout << "Report for each fo the stored states:\n";
+  std::cout << "Report for each of the stored states:\n";
   std::cout << "  length  : center of mass x : center of mass v\n";
 
   for (const auto &state : v_states) {

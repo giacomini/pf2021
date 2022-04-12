@@ -22,7 +22,7 @@ Durante lo svolgimento, consigliamo di tenere aperte le
   - [Soluzione](#soluzione)
   - [Consegna del lavoro svolto](#consegna-del-lavoro-svolto)
   - [Bonus](#bonus)
-    - [Trasformare `Chain` in una `template class`](#trasformare-chain-in-una-template-class)
+    - [Trasformare `Chain` in un `class template`](#trasformare-chain-in-un-class-template)
     - [Utilizzare `algorithm` nella parte di analisi di `main.cpp`](#utilizzare-algorithm-nella-parte-di-analisi-di-maincpp)
       - [Funzione `print_summary` che utilizza `std::accumulate`](#funzione-print_summary-che-utilizza-stdaccumulate)
       - [Funzione `print_state`](#funzione-print_state)
@@ -148,7 +148,7 @@ Implementate la classe `Hooke` seguendo le seguenti linee guida:
   modulo e del segno che ci si aspetta quando questa è _nulla_, _attrattiva_, _repulsiva_.
 
 Procedete quindi a compilare ed eseguire i test fino a quando non ottenete
-un successo completo, es. :
+un successo completo, es.:
 
 ```bash
 $ g++ -Wall -Wextra chain.test.cpp
@@ -197,7 +197,7 @@ Inoltre, espone i seguenti metodi:
 - `size`: permette di conoscere il numero punti materiali di cui la catena è
   composta;
 - `evolve`: permette di calcolare l'evoluzione dello stato della catena in un intervallo di tempo `delta_t`;
-- `state`: restituisce con lo stato di tutti i punti materiali della catena
+- `state`: restituisce lo stato di tutti i punti materiali della catena
   all'istante "attuale" (tramite uno `std::vector<PPState>`).
 
 L'interfaccia ci fornisce in teoria tutto quello che ci serve per seguire
@@ -291,9 +291,9 @@ Se siete arrivati fino a questo punto __complimenti__!
 
 L'approccio utilizzato per lo sviluppo di `Chain` rappresenta una versione
 semplificata di quello che si può fare per sviluppare programmi di simulazione
-che da utilizzare per studiare sistemi di punti materiali:
+da utilizzare per studiare sistemi di punti materiali:
 
-1. caratterizzati un numero "elevato" componenti;
+1. caratterizzati da un numero "elevato" componenti;
 2. per i quali le iterazioni tra i singoli componenti non sono facilmente
    risolvibili analiticamente.
 
@@ -338,7 +338,7 @@ tramite i comandi:
 ```bash
 $ g++ -Wall -Wextra main.cpp
 $ ./a.out 
-Report for each fo the stored states:
+Report for each of the stored states:
   length  : center of mass x : center of mass v
   0.0990  :         0.0495   :         0.0000
   0.0988  :         0.0495   :         0.0000
@@ -394,20 +394,20 @@ come commento alla consegna stessa, dubbi o domande sull'elaborato per i quali
 
 Per chi è interessato, vengono proposti alcuni approfondimenti facoltativi:
 
-### Trasformare `Chain` in una `template class`
+### Trasformare `Chain` in un `class template`
 
 Il fatto che, finora, abbiamo imposto che `Chain` supporti solo la creazione di
 catene di punti materiali interconnessi da molle potrebbe risultare limitante.
 
 Arrivati a questo punto, però, risulta abbastanza semplice generalizzare `Chain`
 in modo da permettere che le interazioni tra i diversi punti materiali possano
-descritte da forze interne _arbitrarie_, diverse dalla legge di Hooke.
+essere descritte da forze interne _arbitrarie_, diverse dalla legge di Hooke.
 
 Questa generalizzazione permetterebbe, ad esempio, di costruire modelli
 elementari di solidi monodimensionali, le cui componenti elementari possono
 interagire tramite potenziali asimmetrici.
 
-Provate a trasformare `Chain` in una `template class` partendo da:
+Provate a trasformare `Chain` in un `class template` partendo da:
 
 ```c++
 ...
@@ -444,7 +444,7 @@ Un modo semplice di cominciare, è quello di spostare la logica che calcola la
 lunghezza media della catena in una funzione:
 
 ```c++
-void print_summary(std::vector<std::vector<PPState>> v_states) {
+void print_summary(std::vector<std::vector<PPState>> const& v_states) {
   auto sum_length = std::accumulate(v_states.begin(), v_states.end(), ... );
   std::cout << "Average length: " << (sum_length / v_states.size()) << '\n';
 }
