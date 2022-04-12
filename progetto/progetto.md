@@ -7,14 +7,16 @@
 
 ## Introduzione
 
-Il progetto d'esame consiste nell'implementazione di uno o più programmi in C++, accompagnati da una breve relazione di
-presentazione.
+Il progetto d'esame consiste nell'implementazione di uno o più programmi in C++,
+accompagnati da una breve relazione di presentazione.
 
-I temi possibili oggetto del progetto sono due:
+I temi proposti sono due:
 
 - [Simulazione dell'evoluzione di una pandemia](epidemia.md)
 - [Simulazione del comportamento di stormi](boids.md)
 
+E' possibile presentare il progetto su un altro tema a propria scelta, purche'
+di complessità paragonabile e concordato preventivamente con i docenti.
 ## Consegna
 
 Il progetto può essere svolto in gruppo, fino a un massimo di quattro persone.
@@ -119,8 +121,8 @@ sufficienti per le esigenze di questo progetto.
 
 Se lo sviluppo avviene in una repository *Git*, potete indicarne l'indirizzo
 nella relazione; se la repository è privata ed è tenuta su
-[GitHub](https://github.com/), potete condividerla con noi aggiungendo gli account `giacomini`, `battibass` e `rsreds` tra i membri del progetto. Naturalmente questo
-non sostituisce la consegna secondo le modalità indicate sopra.
+[GitHub](https://github.com/), potete condividerla con noi aggiungendo gli account `giacomini`, `battibass`, `rsreds` e `GColom` tra i membri del progetto. Naturalmente questo
+**non** sostituisce la consegna secondo le modalità indicate sopra.
 
 ## Valutazione
 

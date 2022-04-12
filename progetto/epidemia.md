@@ -1,9 +1,17 @@
+<!-- omit in toc -->
 # Simulazione dell'evoluzione di un'epidemia
 
+- [Descrizione del problema](#descrizione-del-problema)
+- [Il modello SIR](#il-modello-sir)
+- [Parte I: implementazione del modello SIR](#parte-i-implementazione-del-modello-sir)
+- [Parte II: simulazione tramite automa cellulare](#parte-ii-simulazione-tramite-automa-cellulare)
+- [Variazioni sul tema](#variazioni-sul-tema)
+  
 ## Descrizione del problema
 
-Esiste un semplice modello teorico per descrivere la diffusione di un'epidemia
-all'interno di una popolazione chiusa. Il modello è detto SIR dalle iniziali di
+Il progetto consiste nell'implementazione di una simulazione della diffusione di un'epidemia in una popolozione. Esiste
+un semplice modello teorico per descrivere la diffusione di un'epidemia all'interno di una popolazione chiusa. Il
+modello è detto SIR dalle iniziali di
 
 - *Suscettibili*: le persone che si possono infettare
 - *Infetti*: le persone infette e che possono infettare
