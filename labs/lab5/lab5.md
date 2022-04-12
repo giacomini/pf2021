@@ -52,14 +52,14 @@ grado di descrivere l'evoluzione di una catena di punti materiali (o _physics
 points_), i quali:
 
 - sono liberi di muoversi in una dimensione (es. lungo l'asse _x_);
-- sono collegati l'uno all'altro tramite molle:
-  - ogni molla applica una forza, uguale in modulo, ma di verso opposto ai punti
-    materiali che connette (es. per _1_ e _2_ : _F_<sup>12</sup> = - _F_<sup>21</sup>);
-  - le forze applicate da molle diverse, sono in un dato momento, in generale
+- sono collegati l'uno all'altro tramite molle ed __assumiamo che__:
+  - ogni molla applichi una forza, uguale in modulo, ma di verso opposto ai
+    punti materiali che connette (es. per _1_ e _2_ : _F_<sup>12</sup> = - _F_<sup>21</sup>);
+  - le forze applicate da molle diverse, siano in un dato momento, in generale
     diverse (es. |_F_<sup>12</sup>| &ne; |_F_<sup>23</sup>| ...);
-  - i punti materiali agli estremi della catena (_1_ ed _N_) interagiscono con
+  - i punti materiali agli estremi della catena (_1_ ed _N_) interagiscano con
     un solo "vicino" (es. _1_ interagisce solo con _2_);
-  - tutti gli altri punti (da _2_ a _N-1_) interagiscono col loro vicino "a
+  - tutti gli altri punti (da _2_ a _N-1_) interagiscano col loro vicino "a
     destra" e con quello "a sinistra" (es. _2_ interagisce con _1_ e _3_);
 - assumiamo che tutte le molle siano identiche (abbiano la medesima costante
   elastica _k_ e lunghezza a riposo _l_).
@@ -210,7 +210,7 @@ Un modo semplice per risolvere il problema numericamente è quello di assumere
 che, per intervalli `delta_t` abbastanza piccoli, si possa approssimare
 il moto di ogni `PPState` ad un moto __uniformemente accelerato__:
 
-1. _a(t)_ = _&Sigma;F(t)_
+1. _a(t)_ = _&Sigma;F(t)_ / _m_
 1. _v(t + &Delta;t)_ = _v(t)_ + _a(t)_ &sdot; _&Delta;t_
 1. _x(t + &Delta;t)_ = _x(t)_ + _v(t)_  &sdot; _&Delta;t_ + 0.5 &sdot; _a(t)_
    _&Delta;t<sup>2</sup>_
