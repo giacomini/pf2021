@@ -28,7 +28,9 @@ class Hooke {
     if (m_k <= 0.) {
       throw std::runtime_error{"Hooke's parameter k must be > 0"};
     }
-    if (m_l < 0.) throw std::runtime_error{"Hooke's parameter l must be >= 0"};
+    if (m_l < 0.) {
+      throw std::runtime_error{"Hooke's parameter l must be >= 0"};
+    }
   }
 
   // Il segno del risultato di `operator()` è calcolato
