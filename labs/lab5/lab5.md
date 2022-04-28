@@ -2,7 +2,7 @@
 
 In questo laboratorio utilizzeremo alcuni concetti appresi durante le lezioni
 per sviluppare semplice programma (_toy model_) che calcola, tramite un metodo
-di integrazione numerica, l'evoluzione dinamica di un sistema composto da piu
+di integrazione numerica, l'evoluzione dinamica di un sistema composto da più
 punti materiali interagenti.
 
 Durante lo svolgimento, consigliamo di tenere aperte le
@@ -34,7 +34,7 @@ esempio: `pf2021_labs/lab5`), dove inseriamo i file `.clang-format` e
 `doctest.h` (il modo per ottenerli è stato estensivamente descritto
 [in passato](../)).
 
-Una volta terminato la cartella di lavoro dovrebbe risultare simile a questa:
+Una volta terminato, la cartella di lavoro dovrebbe risultare simile a questa:
 
 ```bash
 $ pwd
@@ -52,17 +52,20 @@ grado di descrivere l'evoluzione di una catena di punti materiali (o _physics
 points_), i quali:
 
 - sono liberi di muoversi in una dimensione (es. lungo l'asse _x_);
-- sono collegati l'uno all'altro tramite molle ed __assumiamo che__:
-  - ogni molla applichi una forza, uguale in modulo, ma di verso opposto ai
-    punti materiali che connette (es. per _1_ e _2_ : _F_<sup>12</sup> = - _F_<sup>21</sup>);
-  - le forze applicate da molle diverse, siano in un dato momento, in generale
-    diverse (es. |_F_<sup>12</sup>| &ne; |_F_<sup>23</sup>| ...);
-  - i punti materiali agli estremi della catena (_1_ ed _N_) interagiscano con
-    un solo "vicino" (es. _1_ interagisce solo con _2_);
-  - tutti gli altri punti (da _2_ a _N-1_) interagiscano col loro vicino "a
-    destra" e con quello "a sinistra" (es. _2_ interagisce con _1_ e _3_);
-- assumiamo che tutte le molle siano identiche (abbiano la medesima costante
-  elastica _k_ e lunghezza a riposo _l_).
+- sono collegati l'uno all'altro tramite molle.
+
+__Assumiamo inoltre che__:
+
+- ogni molla applichi una forza, uguale in modulo ma di verso opposto, ai
+  punti materiali che connette (es. per _1_ e _2_ : _F_<sup>12</sup> = - _F_<sup>21</sup>);
+- le forze applicate da molle diverse, siano in un dato momento, in generale
+  diverse (es. |_F_<sup>12</sup>| &ne; |_F_<sup>23</sup>| ...);
+- i punti materiali agli estremi della catena (_1_ ed _N_) interagiscano con
+  un solo "vicino" (es. _1_ interagisce solo con _2_);
+- tutti gli altri punti (da _2_ a _N-1_) interagiscano col loro vicino "a
+  destra" e con quello "a sinistra" (es. _2_ interagisce con _1_ e _3_);
+- tutte le molle siano identiche (abbiano la medesima costante elastica _k_ e
+  lunghezza a riposo _l_).
 
 Uno schema che descrive graficamente il sistema è mostrato qui:
 
@@ -109,12 +112,12 @@ codice.
 
 ### Secondo passo: forza generata da una molla
 
-Il secondo passo è esprimere in C++ "qualcosa" che, dati due punti materiali
+Il secondo passo è costruire in C++ "qualcosa" che, dati due punti materiali
 (`PPState`), ci permetta di calcolare la forza elastica applicata tra essi
 da una molla di costante _k_ e lunghezza a riposo _l_, secondo la [_legge di
 Hooke_](https://it.wikipedia.org/wiki/Legge_di_Hooke).
 
-Per farlo, suggeriamo di costruire un __oggetto funzione__ a partire dalla
+Per farlo, suggeriamo di sviluppare un __oggetto funzione__ a partire dalla
 seguente __struttura__:
 
 ```c++
