@@ -25,7 +25,9 @@ class Hooke {
 
  public:
   Hooke(double k, double l) : m_k(k), m_l(l) {
-    if (m_k <= 0.) throw std::runtime_error{"Hooke's parameter k must be > 0"};
+    if (m_k <= 0.) {
+      throw std::runtime_error{"Hooke's parameter k must be > 0"};
+    }
     if (m_l < 0.) throw std::runtime_error{"Hooke's parameter l must be >= 0"};
   }
 
