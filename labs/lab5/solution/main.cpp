@@ -47,7 +47,6 @@ int main() {
   // - per una durata di 20 s
   // - suddividendola in 20000 steps
   // - registrando lo stato della catena ogni 100 steps
-
   double const duration{20.0};
   int const steps{20000};
   int const prescale{100};
