@@ -303,7 +303,7 @@ semplificata di quello che si può fare per sviluppare programmi di simulazione
 da utilizzare per studiare sistemi di punti materiali:
 
 1. caratterizzati da un numero "elevato" componenti;
-2. per i quali le iterazioni tra i singoli componenti possono non risultare
+2. per i quali le interazioni tra i singoli componenti possono non risultare
    facilmente risolvibili analiticamente.
 
 Al fine di permettervi di testare la vostra implementazione di `Chain` abbiamo
@@ -551,9 +551,8 @@ partendo da:
 > `std::back_inserter(c_hooke)`, che invoca la funzione `Chain::push_back` ad
 > ogni passo dell'iterazione.
 >
-> __NOTA__: Se non l'avete fatto, sarà necessario aggiungere una piccola
-> dichiarazione `using` per evitare errori di compilazione quando si utilizza
-> `std::back_inserter`, quale?
+> __NOTA__: `std::back_inserter` si aspetta di trovare `Chain::value_type`,
+> di che tipo si tratta nel nostro caso? Come possiamo risolvere il problema?
 >
 > __NOTA__: invece di definire `p_x` fuori da `std::generate_n` ed effettuarne
 > il `capture` all'interno della `lambda` che utilizzerete per definire la
@@ -562,20 +561,19 @@ partendo da:
 
 ### Utilizzare `std::transform` in `Chain::evolve`
 
-Potete infine provare ad utilizzare utilizzare
+Potete infine provare ad utilizzare
 [`std::transform`](https://en.cppreference.com/w/cpp/algorithm/transform)
 all'interno del metodo `evolve`.
 
 > __NOTA__: leggendo la documentazione, potete notare che esiste una versione di
-> `std::transform` che permette di effettuare un operazioni tra due argomenti
+> `std::transform` che permette di effettuare operazioni tra due argomenti
 > diversi dello stesso tipo (`binary_op` nella pagina web). Potete
 > utilizzare questa versione dell'algoritmo per il calcolo della forza relativa
-> all'iterazione di due `PPState`
-> successivi.
+> all'interazione di due `PPState` successivi.
 >
 > __NOTA__: qualora non lo aveste già fatto nella vostra implementazione di
 > `evolve`, risulta conveniente registrare in una variabile il risultato del
 > calcolo della forza di interazione tra due `PPState` (es. 1 e 2 quando si
 > calcola l'evoluzione del `PPState` 1) per evitare di ricalcolarla quando va
-> applicata, con segno opposto, nell calcolo dell'evoluzione del `PPState`
+> applicata, con segno opposto, nel calcolo dell'evoluzione del `PPState`
 > successivo (es. 2, che interagisce sia con 1 che con 3).
