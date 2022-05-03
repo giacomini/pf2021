@@ -446,6 +446,7 @@ Provate a trasformare `Chain` in un `class template` partendo da:
 ...
 template <class F>
 class Chain {
+  F m_inter;
 ...
 };
 ```
