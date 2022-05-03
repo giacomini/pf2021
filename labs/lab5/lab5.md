@@ -6,7 +6,8 @@ di integrazione numerica, l'evoluzione dinamica di un sistema composto da più
 punti materiali interagenti.
 
 Durante lo svolgimento, consigliamo di tenere aperte le
-[slide](https://github.com/giacomini/pf2021/) presentate a lezione.
+[slide](https://github.com/giacomini/pf2021/releases/latest)
+ presentate a lezione.
 
 - [Lab 5](#lab-5)
   - [Area di lavoro](#area-di-lavoro)
@@ -19,13 +20,16 @@ Durante lo svolgimento, consigliamo di tenere aperte le
       - [Implementazione di `evolve`: prima approssimazione](#implementazione-di-evolve-prima-approssimazione)
       - [Implementazione di `evolve`: versione completa](#implementazione-di-evolve-versione-completa)
   - [Un `main` che utilizza la classe `Chain`](#un-main-che-utilizza-la-classe-chain)
+  - [Alcune considerazioni](#alcune-considerazioni)
   - [Soluzione](#soluzione)
   - [Consegna del lavoro svolto](#consegna-del-lavoro-svolto)
   - [Bonus](#bonus)
     - [Trasformare `Chain` in un `class template`](#trasformare-chain-in-un-class-template)
-    - [Utilizzare `algorithm` nella parte di analisi di `main.cpp`](#utilizzare-algorithm-nella-parte-di-analisi-di-maincpp)
+    - [Utilizzare `algorithm` in `main.cpp`](#utilizzare-algorithm-in-maincpp)
       - [Funzione `print_summary` che utilizza `std::accumulate`](#funzione-print_summary-che-utilizza-stdaccumulate)
       - [Funzione `print_state`](#funzione-print_state)
+      - [Inserimento dei punti della `Chain` tramite `generate_n`](#inserimento-dei-punti-della-chain-tramite-generate_n)
+    - [Utilizzare `std::transform` in `Chain::evolve`](#utilizzare-stdtransform-in-chainevolve)
 
 ## Area di lavoro
 
@@ -166,7 +170,7 @@ $ ./a.out
 
 ### Terzo passo: implementazione di `Chain`
 
-Una volta fatte le dovute verifiche sull'oggetto funzione `Hooke` siamo pronti
+Una volta fatte le dovute verifiche sull'oggetto funzione `Hooke`, siamo pronti
 ad implementare la classe `Chain`.
 
 Suggeriamo di farlo partendo da una __base__ simile a quella che segue:
@@ -241,7 +245,7 @@ Se la complessità vi spaventa, potete partire con una piccola approssimazione:
 scrivete un a versione del metodo `evolve` che funzioni con una `Chain` di due
 soli punti materiali.
 
-Questo permette di testare l'implementazione della soluzione numerica
+Questo permette di iniziare a testare l'implementazione della soluzione numerica
 _senza affrontare tutta la complessità in un colpo solo_.
 
 Procedete quindi implementando test partendo da un pezzetto di codice simile a:
@@ -263,9 +267,9 @@ alla fase successiva
 
 #### Implementazione di `evolve`: versione completa
 
-Giunti a questo punto generalizzate il metodo `evolve` per trattare un numero
+Giunti a questo punto, generalizzate il metodo `evolve` per trattare un numero
 arbitrario di punti. Prima di procedere, potreste cominciare creando un test a
-partire da:
+partire da un pezzetto di codice simile a:
 
 ```c++
 Chain c{Hooke{0.1, 2.}};
@@ -278,6 +282,8 @@ c.evolve(1.0);
 const auto state_f = c.state();
 ```
 
+Pensate inoltre ad altri possibili test che potrebbe essere utile implementare.
+
 > __NOTA__: quando si calcola l'evoluzione di uno stato di `Chain`, le forze
 > vanno calcolate utilizzando sempre stati dei punti materiali di
 > `std::vector<PPState> m_ppses` che si riferiscono tutti al medesimo istante
@@ -286,7 +292,7 @@ const auto state_f = c.state();
 > _t + &Delta;t_, poi fare evolvere il secondo `PPState` riferendosi al
 > primo, appena modificato, eccetera ...
 
-Verificate che il programma compili e superi tutti test.
+Verificate che il programma compili e superi tutti test che avete preparato.
 
 ## Un `main` che utilizza la classe `Chain`
 
@@ -297,8 +303,8 @@ semplificata di quello che si può fare per sviluppare programmi di simulazione
 da utilizzare per studiare sistemi di punti materiali:
 
 1. caratterizzati da un numero "elevato" componenti;
-2. per i quali le iterazioni tra i singoli componenti non sono facilmente
-   risolvibili analiticamente.
+2. per i quali le interazioni tra i singoli componenti possono non risultare
+   facilmente risolvibili analiticamente.
 
 Al fine di permettervi di testare la vostra implementazione di `Chain` abbiamo
 caricato una proposta di programma `main`, che:
@@ -363,6 +369,30 @@ quello che ci aspetteremmo:
   dell'oscillatore armonico è simmetrico, quindi, nel tempo, la catena oscilla
   in modo simmetrico rispetto alla sua lunghezza a riposo.
 
+## Alcune considerazioni
+
+Come discusso con alcuni di voi durante il precedente laboratorio, per
+raggiungere un risultato _concreto_ visti i vincoli di tempo tempo allocato,
+abbiamo _corso un po'_, _nascondendo sotto il tappeto_  alcuni aspetti, ad
+esempio:
+
+- non ha senso costruire un oggetto `Hooke` inizializzato con un valore di _k_
+  non positivo, o con una _l_ negativa;
+- abbiamo implicitamente assunto che, quando aggiungiamo i vari `PPState` ad
+  un'istanza di `Chain`, questi siano ordinati rispetto alla coordinata _x_;
+- non abbiamo trattato il caso di eventuali _collisioni_ tra `PPState`;
+- avremmo dovuto spendere più tempo nel considerare tutte le casistiche di test
+  necessarie, prima di procedere con lo sviluppo (es.: i problemi appena
+  descritti ci sarebbero venuti in mente se ci fossimo soffermati a riflettere);
+- l'algoritmo di evoluzione risulta _semplice_, ma _non accurato_.
+
+Alcuni di questi aspetti non sono difficili da risolvere una volta presi in
+considerazione, necessitano solo di un po' di tempo per essere affrontati.
+
+Nel caso di soluzione di problemi _reali_, ad esempio il progetto per l'esame,
+consigliamo vivamente di riflettere a fondo su punti come quelli appena discussi
+(in particolare sulla strategia di testing).
+
 ## Soluzione
 
 Nei giorni successivi a questa esercitazione, la soluzione dell'esercizio (che
@@ -395,7 +425,7 @@ come commento alla consegna stessa, dubbi o domande sull'elaborato per i quali
 
 ## Bonus
 
-Per chi è interessato, vengono proposti alcuni approfondimenti facoltativi:
+Per chi fosse interessato, vengono proposti alcuni approfondimenti facoltativi:
 
 ### Trasformare `Chain` in un `class template`
 
@@ -416,17 +446,16 @@ Provate a trasformare `Chain` in un `class template` partendo da:
 ...
 template <class F>
 class Chain {
-  F m_inter;
 ...
 };
 ```
 
 e modificando il resto del codice, dove necessario.
 
-Ovviamente ogni eventuale oggetto funzione utilizzato per la _specializzazione_
-di `template <class F> class Chain` deve essere costruito in modo da accettare
-argomenti identici a `Hooke::operator()` e restituire un numero, idealmente in
-virgola mobile.
+Ovviamente, ogni eventuale `F` utilizzato per la _specializzazione_ di
+`template <class F> class Chain` deve essere costruito in modo da accettare il
+medesimo tipo e numero di argomenti di `Hooke::operator()` e restituire un
+numero, idealmente in virgola mobile.
 
 > __NOTA__: cosa succede se questo vincolo non viene rispettato?
 >
@@ -436,15 +465,15 @@ virgola mobile.
 > __NOTA__: un approccio analogo si potrebbe utilizzare per generalizzare
 > `solve`.
 
-### Utilizzare `algorithm` nella parte di analisi di `main.cpp`
+### Utilizzare `algorithm` in `main.cpp`
 
-Alcuni punti della funzione main, si prestano ad essere riscritti sperimentando
-l'uso di algoritmi.
+Alcune parti della funzione `main`, si prestano ad essere riscritte
+sperimentando l'uso di algoritmi:
 
 #### Funzione `print_summary` che utilizza `std::accumulate`
 
 Un modo semplice di cominciare, è quello di spostare la logica che calcola la
-lunghezza media della catena in una funzione:
+lunghezza media della catena in una funzione `print_summary`:
 
 ```c++
 void print_summary(std::vector<std::vector<PPState>> const& v_states) {
@@ -456,17 +485,13 @@ std::cout << "\nSummary:\n";
 print_summary(v_states);
 ```
 
-utilizzando
+implementata facendo uso di
 [`std::accumulate`](https://en.cppreference.com/w/cpp/algorithm/accumulate).
 
-> __NOTA__: se non riuscite ad identificare i tipi coinvolti nel processo di
+> __NOTA__: se non riuscite ad identificare i tipi coinvolti nell'operazione di
 > accumulazione, potete partire implementando una `lambda` che accetta i
 > seguenti argomenti:
 > `[](double length,  std::vector<PPState> const& state) {...}`.
-
-È vero, questa separazione implica effettuare due _loop_ su `v_states`, uno in
-`print_summary` ed uno per le stampe dei diversi stati registrati, ma (oggi) è
-un compromesso accettabile che offre una scusa per "fare pratica".
 
 #### Funzione `print_state`
 
@@ -477,10 +502,78 @@ combinazione con una funzione `print_state` per la stampa di:
 ```c++
 std::cout << "Report for each fo the stored states:\n";
 std::cout << " length : center of mass x : center of mass v\n";
-std::for_each(v_states.begin(), v_states.end(), print_state);```
+std::for_each(v_states.begin(), v_states.end(), print_state);
 ```
 
 > __NOTA__: anche all'interno di `print_state` potrebbe essere utile avvalersi
 > di `std::accumulate`. Come potreste fare per gestire l'accumulazione di
 > `sum_m`, `sum_mx`, e `sum_mv` evitando di utilizzare `std::accumulate` più
 > volte?
+
+È vero, questa separazione implica effettuare due _loop_ su `v_states`, uno in
+`print_state` ed uno in `print_summary`, ma per questo laboratorio è un
+compromesso accettabile che offre una scusa per _fare pratica_.
+
+#### Inserimento dei punti della `Chain` tramite `generate_n`
+
+Potete inoltre avvalervi di
+[`std::generate_n`](https://en.cppreference.com/w/cpp/algorithm/generate_n) per
+aggiungere i punti alla `Chain`, sostituendo:
+
+```c++
+  double const p_m{0.05};
+
+  double p_x{0.0};
+  double delta_x{0.011};
+
+  for (auto const p_v : {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) {
+    chain.push_back({p_m, p_x, p_v});
+    p_x += delta_x;
+  };
+```
+
+partendo da:
+
+```c++
+  int const n_points{10};
+  double const p_m{0.05};
+  double const p_v{0.0};
+
+  double p_x{0.0};
+  double delta_x{0.011};
+
+  std::generate_n(std::back_inserter(c_hooke), ... );
+```
+
+> __NOTA__: in questo caso, suggeriamo di assumere che `p_v` sia sempre `0.0`.
+>
+> __NOTA__: come primo argomento  di `std::generate_n` potete utilizzare
+> `std::back_inserter(c_hooke)`, che invoca la funzione `Chain::push_back` ad
+> ogni passo dell'iterazione.
+>
+> __NOTA__: `std::back_inserter` si aspetta di trovare `Chain::value_type`,
+> di che tipo si tratta nel nostro caso? Come possiamo risolvere il problema?
+>
+> __NOTA__: invece di definire `p_x` fuori da `std::generate_n` ed effettuarne
+> il `capture` all'interno della `lambda` che utilizzerete per definire la
+> logica della `generator function` (`g` nella pagina web) potreste
+> utilizzare una `mutable lambda`.
+
+### Utilizzare `std::transform` in `Chain::evolve`
+
+Potete infine provare ad utilizzare
+[`std::transform`](https://en.cppreference.com/w/cpp/algorithm/transform)
+all'interno del metodo `evolve`.
+
+> __NOTA__: leggendo la documentazione, potete notare che esiste una versione di
+> `std::transform` che permette di effettuare operazioni tra due argomenti
+> diversi dello stesso tipo (`binary_op` nella pagina web). Potete
+> utilizzare questa versione dell'algoritmo per il calcolo della forza relativa
+> all'interazione di due `PPState` successivi.
+>
+> __NOTA__: qualora non lo aveste già fatto nella vostra implementazione di
+> `evolve`, risulta conveniente registrare in una variabile il risultato del
+> calcolo della forza di interazione tra due `PPState` (es. 1 e 2 quando si
+> calcola l'evoluzione del `PPState` 1) per evitare di ricalcolarla quando va
+> applicata, con segno opposto, nel calcolo dell'evoluzione del `PPState`
+> successivo (es. 2, che interagisce sia con 1 che con 3).
