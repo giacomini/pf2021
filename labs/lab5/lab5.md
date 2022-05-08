@@ -543,13 +543,13 @@ partendo da:
   double p_x{0.0};
   double delta_x{0.011};
 
-  std::generate_n(std::back_inserter(c_hooke), ... );
+  std::generate_n(std::back_inserter(chain), ... );
 ```
 
 > __NOTA__: in questo caso, suggeriamo di assumere che `p_v` sia sempre `0.0`.
 >
 > __NOTA__: come primo argomento  di `std::generate_n` potete utilizzare
-> `std::back_inserter(c_hooke)`, che invoca la funzione `Chain::push_back` ad
+> `std::back_inserter(chain)`, che invoca la funzione `Chain::push_back` ad
 > ogni passo dell'iterazione.
 >
 > __NOTA__: `std::back_inserter` si aspetta di trovare `Chain::value_type`,

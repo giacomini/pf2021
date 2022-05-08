@@ -1,12 +1,12 @@
+#include "chain.hpp"
+
 #include <iomanip>
 #include <iostream>
-
-#include "chain.hpp"
 
 // Esegue la simulazione della catena, suddividendo "duration" in "steps"
 // e registrando lo stato ogni volta che si compie un numero di step pari
 // a "prescale"
-auto simulate(Chain &chain, double duration, int steps, int prescale) {
+auto simulate(Chain& chain, double duration, int steps, int prescale) {
   std::vector<std::vector<PPState>> v_states;
 
   double delta_t{duration / steps};
@@ -25,7 +25,7 @@ int main() {
   // Molla con:
   // k = 1 N/m
   // l = 1 cm
-  Hooke hooke{1.0, 0.01};
+  Hooke const hooke{1.0, 0.01};
 
   // Catena con 10 punti materiali:
   // m: 50 g per ogni punto
@@ -41,12 +41,12 @@ int main() {
   for (auto const p_v : {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}) {
     chain.push_back({p_m, p_x, p_v});
     p_x += delta_x;
-  };
+  }
 
   // Esegue una simulazione:
   // - per una durata di 20 s
-  // - suddividendola in 20000 steps
-  // - registrando lo stato della catena ogni 100 steps
+  // - suddividendola in 20000 intervalli di tempo
+  // - registrando lo stato della catena ogni 100 intervalli di tempo
   double const duration{20.0};
   int const steps{20000};
   int const prescale{100};
@@ -58,13 +58,12 @@ int main() {
   // - la lunghezza totale della molla ad ogni stato
   // - posizione e velocità del centro di masse della molla ad ogni stato
   // - la media della lunghezza della molla in tutti gli stati campionati
-
   double sum_length{0.0};
 
   std::cout << "Report for each of the stored states:\n";
   std::cout << "  length  : center of mass x : center of mass v\n";
 
-  for (const auto &state : v_states) {
+  for (const auto& state : v_states) {
     auto length = state.back().x - state.front().x;
     sum_length += length;
 
@@ -72,7 +71,7 @@ int main() {
     double sum_mx{0.0};
     double sum_mv{0.0};
 
-    for (const auto &pps : state) {
+    for (const auto& pps : state) {
       sum_m += pps.m;
       sum_mx += pps.m * pps.x;
       sum_mv += pps.m * pps.v;
