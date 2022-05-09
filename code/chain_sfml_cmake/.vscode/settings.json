@@ -1,0 +1,5 @@
+{
+  "cmake.configureOnEdit": false,
+  "cmake.configureOnOpen": false,
+  "cmake.generator": "Unix Makefiles"
+}
