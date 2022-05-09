@@ -1,11 +1,7 @@
+#include "chain.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
-#include <array>
-#include <iomanip>
-#include <iostream>
-#include <thread>
-
-#include "chain.hpp"
 
 auto evolve(Chain& chain, int steps_per_evolution, sf::Time delta_t)
 {
