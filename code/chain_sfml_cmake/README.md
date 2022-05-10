@@ -82,6 +82,15 @@ cmake --build build
 
 il cui significato è: esegui il target di default delle istruzioni di build (`--build`) contenute nella directory `build`. Il target di default fa il build di tutti i target specificati.
 
+Il comando precedente fornisce in output informazioni sintetiche sulle operazioni necessarie per ottenere i target. E' possibile ottenere un output più ricco utilizzando il comando seguente:
+
+```shell
+cmake --build build -- VERBOSE=1
+```
+
+In questo modo è possibile vedere ad esempio i comandi esatti che vengono eseguiti per la compilazione, comprensivi
+delle opzioni relative ai warning, all'ottimizzazione, ai sanitizer, ecc.
+
 Se il `CMakeLists.txt` contiene anche direttive per i test (e questo progetto le prevede), CMake consente anche di eseguire i test, usando il comando:
 
 ```shell
