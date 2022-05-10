@@ -51,7 +51,7 @@ dove $\vec{v}_1$, $\vec{v}_2$ e $\vec{v}_3$ sono le velocità ottenute dall'appl
 
 La regola ha lo scopo di evitare che i boids collidano tra di loro.
 
-$\vec{{v}_1 = -s\sum_{j\ne i}(\vec{x}_{b_i}-\vec{x}_{b_j}) \text{\quad se\quad} |\vec{x}_{b_i}-\vec{x}_{b_j}|<d_s}$
+$\vec{{v}_1 = -s\sum_{j\ne i}(\vec{x}_{b_j}-\vec{x}_{b_i}) \text{\quad se\quad} |\vec{x}_{b_i}-\vec{x}_{b_j}|<d_s}$
 
 Usando la distanza come fattore per determinare la nuova velocità permette di avere una accelerazione graduale del boid che si allontana. Un opportuno fattore di separazione $s$ determina l'intensità della repulsione. La distanza $d_s$ stabilisce il range di influenza della regola.
 
