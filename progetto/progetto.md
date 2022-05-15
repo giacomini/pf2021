@@ -15,8 +15,9 @@ I temi proposti sono due:
 - [Simulazione dell'evoluzione di una pandemia](epidemia.md)
 - [Simulazione del comportamento di stormi](boids.md)
 
-E' possibile presentare il progetto su un altro tema a propria scelta, purche'
+E' possibile presentare il progetto su un altro tema a propria scelta, purché
 di complessità paragonabile e concordato preventivamente con i docenti.
+
 ## Consegna
 
 Il progetto può essere svolto in gruppo, fino a un massimo di quattro persone.
@@ -39,17 +40,20 @@ Il codice deve essere formattato adeguatamente (con `clang-format` o tool
 equivalente). Il file di configurazione del tool di formattazione (ad es.
 `.clang-format`) deve essere consegnato insieme al programma.
 
-Ci si attende che nomi di file, funzioni, tipi, variabili, ecc. siano
-descrittivi e che si seguano convenzioni uniformi. I nomi di file e directory
-non devono contenere spazi.
+Nomi di file, funzioni, tipi, variabili, ecc. devono essere descrittivi e
+seguire convenzioni ortografiche e di lingua uniformi.
+
+I nomi di file e directory non devono contenere spazi.
 
 E' fortemente raccomandata la scrittura di unit test, usando *Doctest* o altro
 strumento analogo.
 
 La consegna avverrà su virtuale.unibo.it tramite un file archivio `.zip` o
 `.tgz`. Ogni studente/studentessa deve inviare l'archivio, anche se il lavoro è
-svolto in gruppo. La consegna va fatta ogni volta che ci si iscrive per un appello,
-indipendentemente dal fatto che nel frattempo siano intercorse modifiche al codice.
+svolto in gruppo. La consegna va fatta ogni volta che ci si iscrive per un
+appello, anche se nel frattempo non sono intercorse modifiche al codice. Se il
+lavoro è svolto in gruppo ed è lo stesso per tutti i componenti del gruppo,
+chiediamo di caricare lo stesso identico archivio.
 
 L'archivio deve contenere:
 
@@ -57,7 +61,7 @@ L'archivio deve contenere:
   eventuali immagini e font)
 - una breve relazione di accompagnamento
 
-Il file **non** dovrà contenere:
+L'archivio **non** deve contenere:
 
 - eseguibili/binari ottenuti compilando il sorgente
 - directory quali `__MACOSX` o simili
@@ -93,18 +97,12 @@ codice e alla valutazione del lavoro nel suo complesso. Indicativamente deve
 contenere:
 
 - autore o autori del lavoro
-
 - descrizione delle principali scelte progettuali e implementative
-
 - istruzioni su come compilare, testare, eseguire
-
 - descrizione del formato di input e di output, possibilmente con degli esempi
-
 - interpretazione dei risultati ottenuti
-
 - strategia di test per verificare che quanto ottenuto sia ragionevolmente
   esente da errori
-
 - ogni altra informazione utile agli obiettivi sopra citati
 
 La relazione deve essere in formato `pdf` o *markdown* (il formato con cui è
@@ -116,13 +114,16 @@ LibreOffice), ricordarsi di esportare in formato `pdf`.
 Pur non essendo necessari, saranno valutati positivamente l'uso di *CMake* per
 la compilazione, l'uso di *Git* come strumento collaborativo e l'adozione di
 ogni altro strumento utile al miglioramento del software prodotto. Per *CMake*
-in particolare, gli esempi disponibili in questa repository dovrebbero essere
-sufficienti per le esigenze di questo progetto.
+in particolare, gli esempi disponibili in questa repository, ad esempio
+[chain_sfml_cmake](../code/chain_sfml_cmake), dovrebbero essere sufficienti per
+le esigenze di questo progetto.
 
 Se lo sviluppo avviene in una repository *Git*, potete indicarne l'indirizzo
 nella relazione; se la repository è privata ed è tenuta su
-[GitHub](https://github.com/), potete condividerla con noi aggiungendo gli account `giacomini`, `battibass`, `rsreds` e `GColom` tra i membri del progetto. Naturalmente questo
-**non** sostituisce la consegna secondo le modalità indicate sopra.
+[GitHub](https://github.com/), potete condividerla con noi aggiungendo gli
+account `giacomini`, `battibass`, `rsreds` e `GColom` tra i membri del progetto.
+Naturalmente questo **non** sostituisce la consegna secondo le modalità indicate
+sopra.
 
 ## Valutazione
 
@@ -162,3 +163,9 @@ Ogni criterio sarà valutato secondo la scala: *insufficiente*, *sufficiente*,
 *buono*, *ottimo*. Indipendentemente dalla valutazione complessiva ottenuta, la
 sufficienza si intende acquisita solo se la valutazione di ogni singolo criterio
 è almeno sufficiente.
+
+La valutazione del progetto vale per tutto l'anno accademico, ma è possibile
+fare ulteriori consegne per eventualmente migliorare la propria valutazione,
+anche se il lavoro era stato fatto originariamente in gruppo; in tal caso vanno
+indicate nella relazione le variazioni intercorse rispetto alla consegna
+precedente.
