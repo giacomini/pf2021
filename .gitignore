@@ -8,5 +8,5 @@ labs/lab*/.clang-format
 labs/lab*/doctest.h
 
 # cmake build directories
-build
+build*
 
