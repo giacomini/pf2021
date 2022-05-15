@@ -1,7 +1,7 @@
 # Esempio di uso di CMake e SFML
 
-L'esempio in questa cartella parte dalla classe `Chain` sviluppata nei laboratori [5](../../labs/lab5/) e
-[6](../../labs/lab6/) e la utilizza per creare una rappresentazione visuale della simulazione.
+L'esempio in questa cartella parte dalla classe `Chain` sviluppata nei laboratori [5 e 6](../../labs/lab5/) e la
+utilizza per creare una rappresentazione visuale della simulazione.
 
 ## SFML
 
@@ -26,8 +26,8 @@ unit test. La presenza di vari eseguibili formati da vari sorgenti è espressa u
 un sistema di *build* che astrae i dettagli di quali comandi eseguire, con quali opzioni e in quale ordine per generare i
 prodotti voluti (tipicamente dei binari, siano essi eseguibili e/o librerie).
 
-L'uso di CMake o di strumenti analoghi (ce ne sono diversi) permette cioè di gestire in modo sostenibile progetti che
 contengono molti file. In particolare durante la fase di sviluppo, uno strumento come CMake è indispensabile per
+L'uso di CMake o di strumenti analoghi (ce ne sono diversi) permette cioè di gestire in modo sostenibile progetti che
 minimizzare le ri-compilazioni necessarie in caso di modifiche a file sorgente.
 
 La descrizione dei *target* di un progetto avviene in un file chiamato `CMakeLists.txt`, secondo un linguaggio
@@ -48,14 +48,17 @@ il cui significato è:
 * è formato dai file sorgente `main.cpp`, `chain.cpp` e `ppstate.cpp`
 * deve essere linkato con la libreria `sfml-graphics`
 
-Da notare che non è necessario specificare anche la dipendenza dalle librerie `sfml-window` e `sfml-system`, come fatto durante la compilazione manuale, perché CMake è in grado di determinarle automaticamente.
+Da notare che non è necessario specificare anche la dipendenza dalle librerie `sfml-window` e `sfml-system`, come fatto
+durante la compilazione manuale, perché CMake è in grado di determinarle automaticamente.
 
 Il modo canonico di utilizzare CMake prevede due fasi:
 
 * configurazione
 * build
 
-Durante la fase di configurazione viene creata (se non esiste già) una directory di lavoro e vengono generati dei file con le istruzioni specifiche per produrre gli artefatti corrispondenti ai target. La configurazione fallisce se le direttive incontrate nel `CMakeLists.txt` contengono degli errori.
+Durante la fase di configurazione viene creata (se non esiste già) una directory di lavoro e vengono generati dei file
+con le istruzioni specifiche per produrre gli artefatti corrispondenti ai target. La configurazione fallisce se le
+direttive incontrate nel `CMakeLists.txt` contengono degli errori.
 
 Tipicamente la configurazione avviene con un comando come il seguente, dato dalla *root* directory del progetto, quella
 cioè in cui sta il file `CMakeLists.txt`:
@@ -70,11 +73,14 @@ il cui significato è:
 * la directory di lavoro è `build` (`-B build`)
 * produci istruzioni per produrre eseguibili con incorporate informazioni di debug (`-DCMAKE_BUILD_TYPE=Debug`)
 
-In genere il tipo di build è di debug solo durante sviluppo e test; nel momento in cui si vuole invece produrre l'eseguibile da utilizzare *in produzione* si usa il tipo di build chiamato *Release*, usando l'opzione `-DCMAKE_BUILD_TYPE=Release`.
+In genere il tipo di build è di debug solo durante sviluppo e test; nel momento in cui si vuole invece produrre
+l'eseguibile da utilizzare *in produzione* si usa il tipo di build chiamato *Release*, usando l'opzione
+`-DCMAKE_BUILD_TYPE=Release`.
 
 Notare che si possono specificare directory di lavoro diverse per i vari tipi di build.
 
-Durante la fase di build vengono invece eseguite le istruzioni generate nella fase precedente. Il comando tipico utilizzato è il seguente:
+Durante la fase di build vengono invece eseguite le istruzioni generate nella fase precedente. Il comando tipico
+utilizzato è il seguente:
 
 ```shell
 cmake --build build
@@ -91,7 +97,8 @@ vengano utilizzate le opzioni dei warning o del sanitizer. In tal caso si può i
 cmake --build build -- VERBOSE=1
 ```
 
-Se il `CMakeLists.txt` contiene anche direttive per i test (e questo progetto le prevede), CMake consente anche di eseguire i test, usando il comando:
+Se il `CMakeLists.txt` contiene anche direttive per i test (e questo progetto le prevede), CMake consente anche di
+eseguire i test, usando il comando:
 
 ```shell
 cmake --build build --target test
@@ -103,9 +110,11 @@ di build contenute nella directory `build`.
 
 **NB** Nel caso di modifiche ai file sorgente, non è necessario ri-configurare la directory di lavoro (`cmake -S . -B
 build ...`), anzi è sconsigliato perché è una perdita di tempo; è sufficiente ri-buildare (`cmake --build build`) e
-ri-testare (`cmake --build build --target test`). Ciò non toglie che se la directory di lavoro per qualche motivo
-appare corrotta, si può tranquillamente rimuovere (`rm -rf build`) e ripartire da capo.
+ri-testare (`cmake --build build --target test`). Ciò non toglie che se la directory di lavoro per qualche motivo appare
+corrotta, si può tranquillamente rimuovere (`rm -rf build`) e ripartire da capo.
 
 ### CMake e Visual Studio Code
 
-VSCode offre un esteso supporto per l'uso di CMake. Raccomandiamo di installare l'estensione [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools), che è comunque compresa nel [C/C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack).
+VSCode offre un esteso supporto per l'uso di CMake. Raccomandiamo di installare l'estensione [CMake
+Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools), che è comunque compresa nel [C/C++
+Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack).
