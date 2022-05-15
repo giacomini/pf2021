@@ -80,7 +80,16 @@ Durante la fase di build vengono invece eseguite le istruzioni generate nella fa
 cmake --build build
 ```
 
-il cui significato è: esegui il target di default delle istruzioni di build (`--build`) contenute nella directory `build`. Il target di default fa il build di tutti i target specificati.
+il cui significato è: esegui il target di default delle istruzioni di build (`--build`) contenute nella directory
+`build`. Il target di default fa il build di tutti i target specificati.
+
+Durante l'esecuzione, `cmake` mostra dei messaggi sintetici sulle azioni necessarie ad ottenere i target. Alle volte
+però è utile vedere esattamente come viene invocato il compilatore, se non altro, ad esempio, per assicurarsi che
+vengano utilizzate le opzioni dei warning o del sanitizer. In tal caso si può invocare `cmake` come segue:
+
+```shell
+cmake --build build -- VERBOSE=1
+```
 
 Se il `CMakeLists.txt` contiene anche direttive per i test (e questo progetto le prevede), CMake consente anche di eseguire i test, usando il comando:
 
