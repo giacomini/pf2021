@@ -118,3 +118,6 @@ corrotta, si può tranquillamente rimuovere (`rm -rf build`) e ripartire da capo
 VSCode offre un esteso supporto per l'uso di CMake. Raccomandiamo di installare l'estensione [CMake
 Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools), che è comunque compresa nel [C/C++
 Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack).
+
+Affinché l'estensione si comporti in modo analogo all'uso di CMake dalla riga di comando, si suggerisce di settare
+l'opzione `"cmake.generator": "Unix Makefiles"` (vedi [`.vscode/settings.json`](.vscode/settings.json)).
